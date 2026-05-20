@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block titulo %}Inicio - Reportes UNAJ{% endblock %}
+
+{% block contenido %}
+<h2>Bienvenido al sistema de reportes</h2>
+<p>Desde esta plataforma puedes registrar y consultar incidencias.</p>
+
+{% if not session.get('usuario_id') %}
+    <a class="btn" href="{{ url_for('main.login') }}">Iniciar sesión</a>
+    <a class="btn btn-secundario" href="{{ url_for('main.registro') }}">Registrarme</a>
+{% else %}
+    <p>Hola, {{ session.get('nombre') }}.</p>
+    <a class="btn" href="{{ url_for('main.crear_incidencia') }}">Crear una incidencia</a>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Acceso | Sistema de Reportes UNAJ</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo-login.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+    <main class="login-stage">
+        <div class="campus-photo" aria-hidden="true">
+            <img
+                src="https://www.portal.unaj.edu.pe/sites/default/files/2026-04/supervision-rectora-unaj.jpg"
+                alt=""
+            >
+        </div>
+
+        <div class="dark-wash" aria-hidden="true"></div>
+        <div class="bottom-shadow" aria-hidden="true"></div>
+
+        <header class="login-header">
+            <a class="brand-logo" href="{{ url_for('login.iniciar_sesion') }}" aria-label="Universidad Nacional de Juliaca">
+                <img
+                    src="https://www.portal.unaj.edu.pe/sites/default/files/archivos/LOGO_BLANCO.png"
+                    alt="Logo UNAJ"
+                >
+            </a>
+
+        </header>
+
+        <section class="hero-copy" id="sistema">
+            <p class="hero-kicker">
+                Universidad Nacional de Juliaca · Sede La Capilla
+            </p>
+
+            <h1>
+                Reporta incidencias
+                <br>
+                del Pabellón Académico.
+            </h1>
+
+            <p class="hero-lead">
+                Plataforma estudiantil para registrar, clasificar y hacer seguimiento
+                a reportes de calidad y ambiente dentro del entorno académico.
+            </p>
+
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="#acceso">
+                    Ingresar
+                </a>
+
+                <a class="btn btn-ghost" href="#ubicacion">
+                    Ver ubicación
+                </a>
+            </div>
+        </section>
+
+        <section class="info-strip" id="ubicacion">
+            <article>
+                <span>Sede</span>
+                <strong>La Capilla</strong>
+            </article>
+
+            <article>
+                <span>Dirección</span>
+                <strong>Av. Nueva Zelandia N.° 631</strong>
+            </article>
+
+            <article>
+                <span>Módulo</span>
+                <strong>Reportes académicos</strong>
+            </article>
+        </section>
+
+        <section class="login-side-panel" id="acceso">
+            <div class="login-card">
+                <div class="card-light"></div>
+
+                <header class="login-card-header">
+                    <div class="logo-box">
+                        <img
+                            src="https://www.portal.unaj.edu.pe/sites/default/files/archivos/LOGO_BLANCO.png"
+                            alt="Logo UNAJ"
+                        >
+                    </div>
+
+                    <div>
+                        <span>Acceso seguro</span>
+                        <h2>Iniciar sesión</h2>
+                    </div>
+                </header>
+
+                <p class="login-card-description">
+                    Ingresa con tu correo y contraseña para continuar al sistema de reportes.
+                </p>
+
+                {% with mensajes = get_flashed_messages(with_categories=true) %}
+                    {% if mensajes %}
+                        <section class="flash-zone">
+                            {% for categoria, mensaje in mensajes %}
+                                <article class="flash-card {{ categoria }}">
+                                    <span>
+                                        {% if categoria == 'success' %}
+                                            ✓
+                                        {% elif categoria == 'danger' %}
+                                            !
+                                        {% elif categoria == 'warning' %}
+                                            ⚠
+                                        {% else %}
+                                            i
+                                        {% endif %}
+                                    </span>
+
+                                    <p>{{ mensaje }}</p>
+                                </article>
+                            {% endfor %}
+                        </section>
+                    {% endif %}
+                {% endwith %}
+
+                <form
+                    class="login-form"
+                    method="POST"
+                    action="{{ url_for('login.iniciar_sesion') }}"
+                    autocomplete="on"
+                >
+                    <div class="form-group">
+                        <label for="correo">Correo institucional</label>
+
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/>
+                            </svg>
+
+                            <input
+                                type="email"
+                                id="correo"
+                                name="correo"
+                                placeholder="xxxxxxxxxx.est@unaj.edu.pe"
+                                autocomplete="email"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M17 9V7A5 5 0 0 0 7 7v2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1ZM9 9V7a3 3 0 0 1 6 0v2H9Zm3 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/>
+                            </svg>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Ingresa tu contraseña"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-button"
+                                id="passwordButton"
+                                aria-label="Mostrar u ocultar contraseña"
+                            >
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5Zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="login-options">
+                        <label class="remember-option">
+                            <input type="checkbox" name="recordar">
+                            <span></span>
+                            Recordarme
+                        </label>
+
+                        <a href="#" class="recover-link">
+                            Recuperar acceso
+                        </a>
+                    </div>
+
+                    <button type="submit" class="login-button" id="loginButton">
+                        <span>Entrar al sistema</span>
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M13 5 20 12l-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z"/>
+                        </svg>
+                    </button>
+                </form>
+
+                <div class="institutional-account">
+                    <span>Cuenta institucional</span>
+
+                    <p>
+                        Las credenciales son asignadas por la universidad.
+                        No se permite crear cuentas desde esta pantalla.
+                    </p>
+                </div>
+
+                <footer class="login-note">
+                    <span></span>
+
+                    <p>
+                        Acceso vinculado a los roles registrados en la base de datos:
+                        usuario, supervisor y administrador.
+                    </p>
+                </footer>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const passwordButton = document.getElementById("passwordButton");
+        const passwordInput = document.getElementById("password");
+        const loginForm = document.querySelector(".login-form");
+        const loginButton = document.getElementById("loginButton");
+
+        passwordButton.addEventListener("click", () => {
+            const visible = passwordInput.type === "text";
+
+            passwordInput.type = visible ? "password" : "text";
+            passwordButton.classList.toggle("active", !visible);
+        });
+
+        loginForm.addEventListener("submit", () => {
+            loginButton.disabled = true;
+            loginButton.classList.add("loading");
+            loginButton.querySelector("span").textContent = "Verificando acceso...";
+        });
+
+        document.querySelectorAll(".flash-card").forEach((card) => {
+            setTimeout(() => {
+                card.classList.add("hide-flash");
+
+                setTimeout(() => {
+                    card.remove();
+                }, 420);
+            }, 4200);
+        });
+
+        document.addEventListener("mousemove", (event) => {
+            const x = event.clientX / window.innerWidth;
+            const y = event.clientY / window.innerHeight;
+
+            document.documentElement.style.setProperty("--mx", `${x * 100}%`);
+            document.documentElement.style.setProperty("--my", `${y * 100}%`);
+        });
+    </script>
+</body>
+</html>

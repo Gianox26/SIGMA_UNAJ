@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Detalle del reporte | Administración UNAJ</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo-reportes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo-detalle-reporte.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+    <svg class="svg-icons" aria-hidden="true">
+        <symbol id="icon-arrow-left" viewBox="0 0 24 24">
+            <path d="M11 5 4 12l7 7 1.4-1.4L7.8 13H20v-2H7.8l4.6-4.6L11 5Z"/>
+        </symbol>
+
+        <symbol id="icon-file" viewBox="0 0 24 24">
+            <path d="M6 2h9l5 5v15H6V2Zm8 1.5V8h4.5L14 3.5ZM8 11h8v2H8v-2Zm0 4h8v2H8v-2Zm0-8h4v2H8V7Z"/>
+        </symbol>
+
+        <symbol id="icon-action" viewBox="0 0 24 24">
+            <path d="M12 2 13.6 8.4 20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6L12 2Zm7 12 1 4 4 1-4 1-1 4-1-4-4-1 4-1 1-4Z"/>
+        </symbol>
+
+        <symbol id="icon-clock" viewBox="0 0 24 24">
+            <path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.4 3.7 2.2-1 1.7L11 13.5V6h2v6.4Z"/>
+        </symbol>
+
+        <symbol id="icon-user" viewBox="0 0 24 24">
+            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v2h16v-2c0-2.76-3.58-5-8-5Z"/>
+        </symbol>
+
+        <symbol id="icon-check" viewBox="0 0 24 24">
+            <path d="M9.2 16.6 4.9 12.3l-1.4 1.4 5.7 5.7L21 7.6l-1.4-1.4L9.2 16.6Z"/>
+        </symbol>
+
+        <symbol id="icon-logout" viewBox="0 0 24 24">
+            <path d="M10 17v-2h4v-2h-4v-2l-4 3 4 3Zm-6 4V3h9v2H6v14h7v2H4Zm11.5-4.5-1.42-1.42L16.17 13H11v-2h5.17l-2.09-2.08L15.5 7.5 20 12l-4.5 4.5Z"/>
+        </symbol>
+    </svg>
+
+    <div class="reportes-bg">
+        <img
+            src="{{ url_for('static', filename='UNAJ capilla.png') }}"
+            alt="Universidad Nacional de Juliaca - Sede La Capilla"
+            class="reportes-bg-img"
+        >
+
+        <div class="reportes-bg-wash"></div>
+        <div class="reportes-bg-grid"></div>
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+    </div>
+
+    {% set pagina_activa = 'reportes' %}
+    {% include 'componentes/menu_admin.html' %}
+
+    <main class="reportes-main detalle-main">
+        <header class="reportes-header detalle-header">
+            <div class="header-copy">
+                <span class="header-kicker">Administración · Detalle del reporte</span>
+
+                <h1>
+                    REP-{{ "%04d"|format(reporte.id_incidencia) }}
+                    <strong>{{ reporte.titulo }}</strong>
+                </h1>
+
+                <p>
+                    Revisa la incidencia, registra acciones administrativas,
+                    asigna responsables y actualiza el estado del reporte.
+                </p>
+            </div>
+
+            <div class="header-actions">
+                <a href="{{ url_for('reportes.panel_reportes') }}" class="btn btn-ghost">
+                    <svg><use href="#icon-arrow-left"></use></svg>
+                    Volver
+                </a>
+
+                <a href="{{ url_for('login.cerrar_sesion') }}" class="btn btn-danger">
+                    <svg><use href="#icon-logout"></use></svg>
+                    Salir
+                </a>
+            </div>
+        </header>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                <section class="flash-zone">
+                    {% for categoria, mensaje in mensajes %}
+                        <article class="flash-card {{ categoria }}">
+                            <span>
+                                {% if categoria == 'success' %}
+                                    ✓
+                                {% elif categoria == 'danger' %}
+                                    !
+                                {% elif categoria == 'warning' %}
+                                    ⚠
+                                {% else %}
+                                    i
+                                {% endif %}
+                            </span>
+
+                            <p>{{ mensaje }}</p>
+                        </article>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="detalle-grid">
+            <article class="detalle-card reporte-info-card">
+                <div class="detalle-card-header">
+                    <div>
+                        <span>Información principal</span>
+                        <h2>Datos de la incidencia</h2>
+                    </div>
+
+                    <span class="state-pill estado-{{ reporte.estado }}">
+                        {{ reporte.estado_texto }}
+                    </span>
+                </div>
+
+                <div class="reporte-description">
+                    <p>{{ reporte.descripcion }}</p>
+                </div>
+
+                <div class="detalle-meta-grid">
+                    <article>
+                        <span>Categoría</span>
+                        <strong>{{ reporte.categoria_texto }}</strong>
+                    </article>
+
+                    <article>
+                        <span>Prioridad</span>
+                        <strong>{{ reporte.prioridad_texto }}</strong>
+                    </article>
+
+                    <article>
+                        <span>Estado actual</span>
+                        <strong>{{ reporte.estado_texto }}</strong>
+                    </article>
+
+                    <article>
+                        <span>Fecha de reporte</span>
+                        <strong>{{ reporte.fecha_reporte }}</strong>
+                    </article>
+                </div>
+
+                <div class="location-box">
+                    <div>
+                        <span>Zona o laboratorio reportado</span>
+                        <strong>{{ reporte.laboratorio }}</strong>
+                    </div>
+                </div>
+
+                {% if reporte.evidencia_url %}
+                    <div class="evidence-box">
+                        <span>Evidencia adjunta</span>
+
+                        <a href="{{ reporte.evidencia_url }}" target="_blank" rel="noopener">
+                            Ver evidencia
+                        </a>
+                    </div>
+                {% endif %}
+            </article>
+
+            <aside class="detalle-side">
+                <article class="detalle-card estudiante-card">
+                    <div class="detalle-card-header">
+                        <div>
+                            <span>Reportado por</span>
+                            <h2>Estudiante</h2>
+                        </div>
+
+                        <div class="detalle-icon">
+                            <svg><use href="#icon-user"></use></svg>
+                        </div>
+                    </div>
+
+                    <div class="student-mini">
+                        <div class="profile-avatar">
+                            {{ reporte.estudiante_nombre[0] }}{{ reporte.estudiante_apellido[0] }}
+                        </div>
+
+                        <div>
+                            <strong>
+                                {{ reporte.estudiante_nombre }}
+                                {{ reporte.estudiante_apellido }}
+                            </strong>
+
+                            <span>{{ reporte.estudiante_correo }}</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="detalle-card quick-state-card">
+                    <div class="detalle-card-header">
+                        <div>
+                            <span>Estado del reporte</span>
+                            <h2>Cambiar estado</h2>
+                        </div>
+
+                        <div class="detalle-icon">
+                            <svg><use href="#icon-check"></use></svg>
+                        </div>
+                    </div>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('reportes.cambiar_estado_reporte', id_incidencia=reporte.id_incidencia) }}"
+                        class="detalle-form"
+                    >
+                        <label>
+                            <span>Nuevo estado</span>
+
+                            <select name="estado" required>
+                                {% for valor, texto in estados.items() %}
+                                    <option value="{{ valor }}" {% if reporte.estado == valor %}selected{% endif %}>
+                                        {{ texto }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </label>
+
+                        <button type="submit" class="btn btn-primary">
+                            Actualizar estado
+                        </button>
+                    </form>
+                </article>
+            </aside>
+        </section>
+
+        <section class="detalle-grid action-section-grid">
+            <article class="detalle-card action-form-card">
+                <div class="detalle-card-header">
+                    <div>
+                        <span>Gestión administrativa</span>
+                        <h2>Registrar nueva acción</h2>
+                    </div>
+
+                    <div class="detalle-icon">
+                        <svg><use href="#icon-action"></use></svg>
+                    </div>
+                </div>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('reportes.registrar_accion', id_incidencia=reporte.id_incidencia) }}"
+                    class="detalle-form action-form"
+                >
+                    <label class="form-full">
+                        <span>Descripción de la acción</span>
+
+                        <textarea
+                            name="descripcion"
+                            rows="5"
+                            placeholder="Ejemplo: Se derivó el caso al área de mantenimiento para revisión del ambiente..."
+                            required
+                        ></textarea>
+                    </label>
+
+                    <label>
+                        <span>Estado de la acción</span>
+
+                        <select name="estado_accion" required>
+                            {% for valor, texto in estados_accion.items() %}
+                                <option value="{{ valor }}">
+                                    {{ texto }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <label>
+                        <span>Cambiar estado del reporte</span>
+
+                        <select name="nuevo_estado">
+                            <option value="">No cambiar estado</option>
+
+                            {% for valor, texto in estados.items() %}
+                                <option value="{{ valor }}" {% if reporte.estado == valor %}selected{% endif %}>
+                                    {{ texto }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <label>
+                        <span>Responsable asignado</span>
+
+                        <select name="id_responsable">
+                            <option value="">Sin responsable asignado</option>
+
+                            {% for responsable in responsables %}
+                                <option value="{{ responsable.id_usuario }}">
+                                    {{ responsable.nombre }} {{ responsable.apellido }} · {{ responsable.rol|capitalize }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            Registrar acción
+                        </button>
+                    </div>
+                </form>
+            </article>
+
+            <article class="detalle-card actions-list-card">
+                <div class="detalle-card-header">
+                    <div>
+                        <span>Acciones tomadas</span>
+                        <h2>Seguimiento del caso</h2>
+                    </div>
+
+                    <small>{{ acciones|length }} acción{% if acciones|length != 1 %}es{% endif %}</small>
+                </div>
+
+                {% if acciones %}
+                    <div class="timeline-list">
+                        {% for accion in acciones %}
+                            <article class="timeline-item">
+                                <div class="timeline-dot estado-accion-{{ accion.estado }}">
+                                    <svg><use href="#icon-action"></use></svg>
+                                </div>
+
+                                <div class="timeline-content">
+                                    <div class="timeline-top">
+                                        <strong>ACC-{{ "%04d"|format(accion.id_accion) }}</strong>
+
+                                        <span class="tag estado-accion-{{ accion.estado }}">
+                                            {{ accion.estado_texto }}
+                                        </span>
+                                    </div>
+
+                                    <p>{{ accion.descripcion }}</p>
+
+                                    <div class="timeline-meta">
+                                        <span>
+                                            Supervisor:
+                                            {{ accion.supervisor_nombre }}
+                                            {{ accion.supervisor_apellido }}
+                                        </span>
+
+                                        <span>
+                                            Responsable:
+                                            {% if accion.responsable_nombre %}
+                                                {{ accion.responsable_nombre }}
+                                                {{ accion.responsable_apellido }}
+                                            {% else %}
+                                                No asignado
+                                            {% endif %}
+                                        </span>
+
+                                        <span>Inicio: {{ accion.fecha_inicio }}</span>
+
+                                        {% if accion.fecha_fin %}
+                                            <span>Fin: {{ accion.fecha_fin }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state compact-empty">
+                        <div class="empty-icon">
+                            <svg><use href="#icon-action"></use></svg>
+                        </div>
+
+                        <h3>No hay acciones registradas</h3>
+
+                        <p>
+                            Registra la primera acción administrativa para iniciar
+                            el seguimiento de esta incidencia.
+                        </p>
+                    </div>
+                {% endif %}
+            </article>
+        </section>
+
+        <section class="detalle-card historial-card">
+            <div class="detalle-card-header">
+                <div>
+                    <span>Historial</span>
+                    <h2>Movimientos del reporte</h2>
+                </div>
+
+                <div class="detalle-icon">
+                    <svg><use href="#icon-clock"></use></svg>
+                </div>
+            </div>
+
+            {% if historial %}
+                <div class="history-list">
+                    {% for item in historial %}
+                        <article class="history-item">
+                            <div class="history-date">
+                                {{ item.fecha }}
+                            </div>
+
+                            <div class="history-body">
+                                <strong>
+                                    {{ item.tipo_evento|replace('_', ' ')|capitalize }}
+                                </strong>
+
+                                <p>{{ item.descripcion }}</p>
+
+                                {% if item.estado_anterior or item.estado_nuevo %}
+                                    <div class="history-change">
+                                        {% if item.estado_anterior %}
+                                            <span>Antes: {{ item.estado_anterior }}</span>
+                                        {% endif %}
+
+                                        {% if item.estado_nuevo %}
+                                            <span>Ahora: {{ item.estado_nuevo }}</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+
+                                <small>
+                                    Registrado por:
+                                    {{ item.nombre }}
+                                    {{ item.apellido }}
+                                    · {{ item.rol|capitalize }}
+                                </small>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state compact-empty">
+                    <div class="empty-icon">
+                        <svg><use href="#icon-clock"></use></svg>
+                    </div>
+
+                    <h3>Sin historial registrado</h3>
+
+                    <p>
+                        Los cambios de estado y acciones administrativas aparecerán aquí.
+                    </p>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("mousemove", (event) => {
+            const x = event.clientX / window.innerWidth;
+            const y = event.clientY / window.innerHeight;
+
+            document.documentElement.style.setProperty("--mx", `${x * 100}%`);
+            document.documentElement.style.setProperty("--my", `${y * 100}%`);
+        });
+
+        document.querySelectorAll(".flash-card").forEach((card) => {
+            setTimeout(() => {
+                card.classList.add("hide-flash");
+
+                setTimeout(() => {
+                    card.remove();
+                }, 420);
+            }, 4300);
+        });
+
+        document.querySelectorAll(".detalle-card").forEach((card) => {
+            card.addEventListener("mousemove", (event) => {
+                const rect = card.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                card.style.setProperty("--card-x", `${x}px`);
+                card.style.setProperty("--card-y", `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>

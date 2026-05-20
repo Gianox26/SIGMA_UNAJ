@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block titulo %}Admin - Reportes UNAJ{% endblock %}
+
+{% block contenido %}
+<h2>Panel de administración</h2>
+
+{% if incidencias %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Usuario</th>
+            <th>Estado</th>
+            <th>Actualizar</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for incidencia in incidencias %}
+        <tr>
+            <td>{{ incidencia.id }}</td>
+            <td>{{ incidencia.titulo }}</td>
+            <td>{{ incidencia.usuario }}</td>
+            <td>{{ incidencia.estado }}</td>
+            <td>
+                <form method="POST">
+                    <input type="hidden" name="incidencia_id" value="{{ incidencia.id }}">
+                    <select name="estado">
+                        <option value="Pendiente" {% if incidencia.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                        <option value="En revisión" {% if incidencia.estado == 'En revisión' %}selected{% endif %}>En revisión</option>
+                        <option value="Resuelta" {% if incidencia.estado == 'Resuelta' %}selected{% endif %}>Resuelta</option>
+                    </select>
+                    <button type="submit">Actualizar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No hay incidencias para administrar.</p>
+{% endif %}
+{% endblock %}

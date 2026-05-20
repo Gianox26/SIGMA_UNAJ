@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard Estudiante | Sistema de Reportes UNAJ</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo-dashboard.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+    <div class="dashboard-background">
+        <img
+            src="https://www.portal.unaj.edu.pe/sites/default/files/2026-04/supervision-rectora-unaj.jpg"
+            alt="Universidad Nacional de Juliaca - Sede La Capilla"
+            class="background-image"
+        >
+
+        <div class="background-wash"></div>
+        <div class="background-grid"></div>
+        <div class="campus-noise"></div>
+
+        <div class="ambient-shape shape-one"></div>
+        <div class="ambient-shape shape-two"></div>
+        <div class="ambient-shape shape-three"></div>
+    </div>
+
+    <svg class="svg-icons" aria-hidden="true">
+        <symbol id="icon-home" viewBox="0 0 24 24">
+            <path d="M3 10.7 12 3l9 7.7v9.1a1.2 1.2 0 0 1-1.2 1.2h-5.1v-6.3H9.3V21H4.2A1.2 1.2 0 0 1 3 19.8v-9.1Z"/>
+        </symbol>
+
+        <symbol id="icon-plus" viewBox="0 0 24 24">
+            <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"/>
+        </symbol>
+
+        <symbol id="icon-list" viewBox="0 0 24 24">
+            <path d="M5 5h14v3H5V5Zm0 5.5h14v3H5v-3ZM5 16h14v3H5v-3Z"/>
+        </symbol>
+
+        <symbol id="icon-bell" viewBox="0 0 24 24">
+            <path d="M12 22a2.6 2.6 0 0 0 2.55-2.1h-5.1A2.6 2.6 0 0 0 12 22Zm7-5-1.8-2.3V10a5.2 5.2 0 0 0-4-5.05V3a1.2 1.2 0 0 0-2.4 0v1.95a5.2 5.2 0 0 0-4 5.05v4.7L5 17v1h14v-1Z"/>
+        </symbol>
+
+        <symbol id="icon-time" viewBox="0 0 24 24">
+            <path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.4 3.7 2.2-1 1.7L11 13.5V6h2v6.4Z"/>
+        </symbol>
+
+        <symbol id="icon-arrow" viewBox="0 0 24 24">
+            <path d="M13 5 20 12l-7 7-1.45-1.45 4.55-4.55H4v-2h12.1l-4.55-4.55L13 5Z"/>
+        </symbol>
+
+        <symbol id="icon-exit" viewBox="0 0 24 24">
+            <path d="M10 3h9a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-9v-2h8V5h-8V3Zm-1.3 5.3L12.4 12l-3.7 3.7-1.4-1.4L8.6 13H3v-2h5.6L7.3 9.7l1.4-1.4Z"/>
+        </symbol>
+
+        <symbol id="icon-spark" viewBox="0 0 24 24">
+            <path d="M12 2 13.55 8.45 20 10l-6.45 1.55L12 18l-1.55-6.45L4 10l6.45-1.55L12 2Zm7 12 1 4 4 1-4 1-1 4-1-4-4-1 4-1 1-4Z"/>
+        </symbol>
+    </svg>
+
+    <aside class="app-sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-mark">
+                <img
+                    src="https://www.portal.unaj.edu.pe/sites/default/files/archivos/LOGO_BLANCO.png"
+                    alt="Logo UNAJ"
+                >
+            </div>
+
+            <div>
+                <span>UNAJ</span>
+                <strong>Reportes</strong>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu" aria-label="Menú principal">
+            <a href="{{ url_for('dashboard.estudiante') }}" class="menu-link active">
+                <svg><use href="#icon-home"></use></svg>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('reporte.nuevo_reporte') }}" class="menu-link action">
+                <svg><use href="#icon-plus"></use></svg>
+                <span>Nuevo reporte</span>
+            </a>
+
+            <a href="#mis-incidencias" class="menu-link">
+                <svg><use href="#icon-list"></use></svg>
+                <span>Mis incidencias</span>
+            </a>
+
+            <a href="#actividad" class="menu-link">
+                <svg><use href="#icon-time"></use></svg>
+                <span>Actividad</span>
+            </a>
+
+            <a href="#notificaciones" class="menu-link">
+                <svg><use href="#icon-bell"></use></svg>
+                <span>Notificaciones</span>
+
+                {% if total_no_leidas > 0 %}
+                    <b>{{ total_no_leidas }}</b>
+                {% endif %}
+            </a>
+        </nav>
+
+        <section class="sidebar-campus-card">
+            <div class="campus-card-image">
+                <img
+                    src="https://www.portal.unaj.edu.pe/sites/default/files/2026-04/supervision-rectora-unaj.jpg"
+                    alt="Sede La Capilla UNAJ"
+                >
+            </div>
+
+            <div>
+                <span>Sede académica</span>
+                <strong>La Capilla</strong>
+                <p>Av. Nueva Zelandia N.° 631</p>
+            </div>
+        </section>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                {{ usuario.nombre[0] }}{{ usuario.apellido[0] }}
+            </div>
+
+            <div>
+                <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>
+                <span>{{ usuario.rol|capitalize }}</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="student-hero">
+            <section class="hero-copy">
+                <div class="hero-topline">
+                    <span class="live-dot"></span>
+                    <span>Pabellón Académico · Sede La Capilla</span>
+                </div>
+
+                <h1>
+                    Hola, {{ usuario.nombre }}.
+                    <br>
+                    Tus reportes están aquí.
+                </h1>
+
+                <p>
+                    Registra incidencias, revisa su estado y mantén el seguimiento
+                    desde un panel simple, rápido y pensado para estudiantes.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="{{ url_for('reporte.nuevo_reporte') }}" class="btn btn-primary magnetic-link">
+                        <span>Crear reporte</span>
+                        <svg><use href="#icon-plus"></use></svg>
+                    </a>
+
+                    <a href="#mis-incidencias" class="btn btn-ghost magnetic-link">
+                        <span>Ver mis reportes</span>
+                        <svg><use href="#icon-arrow"></use></svg>
+                    </a>
+
+                    <a href="{{ url_for('login.cerrar_sesion') }}" class="btn btn-danger-soft">
+                        <span>Salir</span>
+                        <svg><use href="#icon-exit"></use></svg>
+                    </a>
+                </div>
+            </section>
+
+            <aside class="hero-campus">
+                <div class="campus-photo-card">
+                    <img
+                        src="https://www.portal.unaj.edu.pe/sites/default/files/2026-04/supervision-rectora-unaj.jpg"
+                        alt="Actividad académica en la sede La Capilla"
+                    >
+
+                    <div class="photo-badge">
+                        <span>UNAJ</span>
+                        <strong>La Capilla</strong>
+                    </div>
+                </div>
+
+                <div class="campus-facts">
+                    <article>
+                        <span>Sede</span>
+                        <strong>La Capilla</strong>
+                    </article>
+
+                    <article>
+                        <span>Módulo</span>
+                        <strong>Reportes</strong>
+                    </article>
+
+                    <article>
+                        <span>Panel</span>
+                        <strong>Estudiante</strong>
+                    </article>
+                </div>
+            </aside>
+        </header>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                <section class="flash-zone">
+                    {% for categoria, mensaje in mensajes %}
+                        <article class="flash-card {{ categoria }}">
+                            <span>
+                                {% if categoria == 'success' %}
+                                    ✓
+                                {% elif categoria == 'danger' %}
+                                    !
+                                {% elif categoria == 'warning' %}
+                                    ⚠
+                                {% else %}
+                                    i
+                                {% endif %}
+                            </span>
+
+                            <p>{{ mensaje }}</p>
+                        </article>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="quick-status-row">
+            <article class="status-tile total">
+                <div class="tile-icon">
+                    <svg><use href="#icon-list"></use></svg>
+                </div>
+
+                <div>
+                    <span>Total de reportes</span>
+                    <strong>{{ resumen.total }}</strong>
+                    <p>Registrados por tu usuario.</p>
+                </div>
+            </article>
+
+            <article class="status-tile process">
+                <div class="tile-icon">
+                    <svg><use href="#icon-time"></use></svg>
+                </div>
+
+                <div>
+                    <span>En proceso</span>
+                    <strong>{{ resumen.en_proceso }}</strong>
+                    <p>Casos que están siendo atendidos.</p>
+                </div>
+            </article>
+
+            <article class="status-tile critical">
+                <div class="tile-icon">
+                    <svg><use href="#icon-spark"></use></svg>
+                </div>
+
+                <div>
+                    <span>Críticas</span>
+                    <strong>{{ resumen.criticas }}</strong>
+                    <p>Requieren atención prioritaria.</p>
+                </div>
+            </article>
+
+            <article class="status-tile notifications">
+                <div class="tile-icon">
+                    <svg><use href="#icon-bell"></use></svg>
+                </div>
+
+                <div>
+                    <span>No leídas</span>
+                    <strong>{{ total_no_leidas }}</strong>
+                    <p>Alertas pendientes.</p>
+                </div>
+            </article>
+        </section>
+
+        <section class="insight-grid">
+            <article class="panel progress-panel">
+                <div class="panel-heading">
+                    <div>
+                        <span>Seguimiento</span>
+                        <h2>Estado de tus incidencias</h2>
+                    </div>
+
+                    <small>Actualizado desde la base de datos</small>
+                </div>
+
+                <div class="status-stack">
+                    {% set estados_base = [
+                        ('nueva', 'Nueva', resumen.nuevas),
+                        ('en_proceso', 'En proceso', resumen.en_proceso),
+                        ('resuelta', 'Resuelta', resumen.resueltas),
+                        ('cerrada', 'Cerrada', resumen.cerradas),
+                        ('reabierta', 'Reabierta', resumen.reabiertas)
+                    ] %}
+
+                    {% for codigo, nombre, total in estados_base %}
+                        {% if resumen.total > 0 %}
+                            {% set porcentaje = (total * 100 / resumen.total) %}
+                        {% else %}
+                            {% set porcentaje = 0 %}
+                        {% endif %}
+
+                        <div class="status-line">
+                            <div class="status-label">
+                                <span class="dot estado-{{ codigo }}"></span>
+                                <p>{{ nombre }}</p>
+                                <strong>{{ total }}</strong>
+                            </div>
+
+                            <div class="progress-track">
+                                <div
+                                    class="progress-fill estado-{{ codigo }}"
+                                    data-width="{{ porcentaje|round(0, 'floor') }}"
+                                ></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="panel priority-panel">
+                <div class="panel-heading">
+                    <div>
+                        <span>Riesgo</span>
+                        <h2>Prioridad y categoría</h2>
+                    </div>
+                </div>
+
+                <div class="priority-orbit">
+                    <div class="orbit-center">
+                        <span>{{ resumen.total }}</span>
+                        <small>Total</small>
+                    </div>
+
+                    <article class="orbit-chip chip-critical">
+                        <span>Crítica</span>
+                        <strong>{{ resumen.criticas }}</strong>
+                    </article>
+
+                    <article class="orbit-chip chip-high">
+                        <span>Alta</span>
+                        <strong>{{ resumen.altas }}</strong>
+                    </article>
+
+                    <article class="orbit-chip chip-quality">
+                        <span>Calidad</span>
+                        <strong>{{ resumen.calidad }}</strong>
+                    </article>
+
+                    <article class="orbit-chip chip-ambient">
+                        <span>Ambiental</span>
+                        <strong>{{ resumen.ambiental }}</strong>
+                    </article>
+                </div>
+            </article>
+        </section>
+
+        <section class="content-grid">
+            <article class="panel reports-panel" id="mis-incidencias">
+                <div class="panel-heading with-actions">
+                    <div>
+                        <span>Mis reportes</span>
+                        <h2>Últimas incidencias</h2>
+                    </div>
+
+                    <div class="panel-actions">
+                        <label class="search-mini">
+                            <input
+                                type="search"
+                                id="reportSearch"
+                                placeholder="Buscar reporte..."
+                                autocomplete="off"
+                            >
+                        </label>
+
+                        <a href="{{ url_for('reporte.nuevo_reporte') }}" class="mini-action">
+                            Crear reporte
+                        </a>
+                    </div>
+                </div>
+
+                {% if ultimas_incidencias %}
+                    <div class="reports-list" id="reportsList">
+                        {% for incidencia in ultimas_incidencias %}
+                            <article
+                                class="report-card interactive-card"
+                                data-title="{{ incidencia.titulo|lower }}"
+                                data-lab="{{ incidencia.laboratorio|lower }}"
+                                data-state="{{ incidencia.estado_texto|lower }}"
+                                data-priority="{{ incidencia.prioridad_texto|lower }}"
+                            >
+                                <div class="report-main">
+                                    <div class="report-icon prioridad-{{ incidencia.prioridad }}">
+                                        {% if incidencia.categoria == 'ambiental' %}
+                                            ♧
+                                        {% else %}
+                                            ◆
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="report-copy">
+                                        <div class="report-title-row">
+                                            <h3>{{ incidencia.titulo }}</h3>
+
+                                            <span class="report-state estado-{{ incidencia.estado }}">
+                                                {{ incidencia.estado_texto }}
+                                            </span>
+                                        </div>
+
+                                        <p>{{ incidencia.descripcion }}</p>
+
+                                        <div class="report-meta">
+                                            <span>{{ incidencia.laboratorio }}</span>
+                                            <span>{{ incidencia.fecha_reporte }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report-tags">
+                                    <span class="tag categoria-{{ incidencia.categoria }}">
+                                        {{ incidencia.categoria_texto }}
+                                    </span>
+
+                                    <span class="tag prioridad-{{ incidencia.prioridad }}">
+                                        {{ incidencia.prioridad_texto }}
+                                    </span>
+
+                                    <span class="tag estado-{{ incidencia.estado }}">
+                                        {{ incidencia.estado_texto }}
+                                    </span>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+
+                    <div class="empty-filter-state" id="emptyFilterState" hidden>
+                        <span>⌕</span>
+                        <strong>No encontramos coincidencias</strong>
+                        <p>Prueba buscando por título, ambiente, estado o prioridad.</p>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span>▦</span>
+
+                        <h3>Aún no registraste incidencias</h3>
+
+                        <p>
+                            Cuando crees tu primer reporte aparecerá aquí con su estado,
+                            prioridad y seguimiento.
+                        </p>
+
+                        <a href="{{ url_for('reporte.nuevo_reporte') }}" class="btn btn-primary">
+                            Crear mi primer reporte
+                        </a>
+                    </div>
+                {% endif %}
+            </article>
+
+            <aside class="right-column">
+                <article class="panel notifications-panel" id="notificaciones">
+                    <div class="panel-heading compact">
+                        <div>
+                            <span>Alertas</span>
+                            <h2>Notificaciones</h2>
+                        </div>
+
+                        {% if total_no_leidas > 0 %}
+                            <b class="notif-badge">{{ total_no_leidas }}</b>
+                        {% endif %}
+                    </div>
+
+                    {% if notificaciones %}
+                        <div class="notifications-list">
+                            {% for notificacion in notificaciones %}
+                                <div class="notification-card {% if not notificacion.leido %}unread{% endif %}">
+                                    <div class="notif-line">
+                                        <span class="notif-dot"></span>
+                                    </div>
+
+                                    <div>
+                                        <p>{{ notificacion.mensaje }}</p>
+                                        <small>{{ notificacion.fecha }}</small>
+
+                                        {% if not notificacion.leido %}
+                                            <form
+                                                method="POST"
+                                                action="{{ url_for('dashboard.marcar_notificacion_leida', id_notificacion=notificacion.id_notificacion) }}"
+                                            >
+                                                <button type="submit">
+                                                    Marcar como leída
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="mini-empty">
+                            <span>●</span>
+                            <p>No tienes notificaciones.</p>
+                        </div>
+                    {% endif %}
+                </article>
+
+                <article class="panel actions-panel">
+                    <div class="panel-heading compact">
+                        <div>
+                            <span>Acciones</span>
+                            <h2>Atención reciente</h2>
+                        </div>
+                    </div>
+
+                    {% if acciones %}
+                        <div class="actions-list">
+                            {% for accion in acciones %}
+                                <div class="action-card">
+                                    <div class="action-status estado-{{ accion.estado }}"></div>
+
+                                    <div>
+                                        <h3>{{ accion.incidencia_titulo }}</h3>
+
+                                        <p>{{ accion.descripcion }}</p>
+
+                                        <small>
+                                            Supervisor:
+                                            {{ accion.supervisor_nombre }}
+                                            {{ accion.supervisor_apellido }}
+                                        </small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="mini-empty">
+                            <span>◷</span>
+                            <p>Aún no hay acciones asignadas a tus reportes.</p>
+                        </div>
+                    {% endif %}
+                </article>
+
+                <article class="student-tip-card">
+                    <span>Consejo rápido</span>
+
+                    <strong>Describe ubicación + problema + riesgo.</strong>
+
+                    <p>
+                        Ejemplo: “Filtración de agua cerca de equipos eléctricos
+                        en el laboratorio”. Eso ayuda a priorizar mejor.
+                    </p>
+                </article>
+            </aside>
+        </section>
+
+        <section class="panel history-panel" id="actividad">
+            <div class="panel-heading">
+                <div>
+                    <span>Actividad</span>
+                    <h2>Historial reciente</h2>
+                </div>
+
+                <small>Eventos asociados a tus incidencias</small>
+            </div>
+
+            {% if historial %}
+                <div class="timeline">
+                    {% for item in historial %}
+                        <article class="timeline-item">
+                            <div class="timeline-point"></div>
+
+                            <div class="timeline-content">
+                                <div class="timeline-top">
+                                    <strong>{{ item.tipo_evento|replace('_', ' ')|capitalize }}</strong>
+                                    <span>{{ item.fecha }}</span>
+                                </div>
+
+                                <h3>{{ item.incidencia_titulo }}</h3>
+
+                                <p>{{ item.descripcion }}</p>
+
+                                {% if item.estado_anterior or item.estado_nuevo %}
+                                    <div class="timeline-change">
+                                        {% if item.estado_anterior %}
+                                            <span>Antes: {{ item.estado_anterior }}</span>
+                                        {% endif %}
+
+                                        {% if item.estado_nuevo %}
+                                            <span>Ahora: {{ item.estado_nuevo }}</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state small">
+                    <span>◷</span>
+
+                    <h3>Sin actividad reciente</h3>
+
+                    <p>
+                        Los cambios de estado, comentarios o asignaciones aparecerán
+                        en esta sección.
+                    </p>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("mousemove", (event) => {
+            const x = event.clientX / window.innerWidth;
+            const y = event.clientY / window.innerHeight;
+
+            document.documentElement.style.setProperty("--mx", `${x * 100}%`);
+            document.documentElement.style.setProperty("--my", `${y * 100}%`);
+        });
+
+        document.querySelectorAll(".progress-fill[data-width]").forEach((barra) => {
+            const valor = Number(barra.dataset.width || 0);
+            const porcentaje = Math.max(0, Math.min(100, valor));
+
+            setTimeout(() => {
+                barra.style.width = `${porcentaje}%`;
+            }, 360);
+        });
+
+        document.querySelectorAll(".flash-card").forEach((card) => {
+            setTimeout(() => {
+                card.classList.add("hide-flash");
+
+                setTimeout(() => {
+                    card.remove();
+                }, 450);
+            }, 4300);
+        });
+
+        const reportSearch = document.getElementById("reportSearch");
+        const reportsList = document.getElementById("reportsList");
+        const emptyFilterState = document.getElementById("emptyFilterState");
+
+        if (reportSearch && reportsList) {
+            const cards = Array.from(reportsList.querySelectorAll(".report-card"));
+
+            reportSearch.addEventListener("input", () => {
+                const query = reportSearch.value.trim().toLowerCase();
+                let visibles = 0;
+
+                cards.forEach((card) => {
+                    const text = [
+                        card.dataset.title,
+                        card.dataset.lab,
+                        card.dataset.state,
+                        card.dataset.priority
+                    ].join(" ");
+
+                    const show = text.includes(query);
+
+                    card.hidden = !show;
+
+                    if (show) {
+                        visibles += 1;
+                    }
+                });
+
+                if (emptyFilterState) {
+                    emptyFilterState.hidden = visibles !== 0;
+                }
+            });
+        }
+
+        document.querySelectorAll(".interactive-card").forEach((card) => {
+            card.addEventListener("mousemove", (event) => {
+                const rect = card.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                card.style.setProperty("--card-x", `${x}px`);
+                card.style.setProperty("--card-y", `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>

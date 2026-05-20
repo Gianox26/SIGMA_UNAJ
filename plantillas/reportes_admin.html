@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reportes | Administración UNAJ</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo-reportes.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+    <svg class="svg-icons" aria-hidden="true">
+        <symbol id="icon-search" viewBox="0 0 24 24">
+            <path d="M9.5 3a6.5 6.5 0 0 1 5.17 10.44l4.44 4.45-1.42 1.41-4.44-4.44A6.5 6.5 0 1 1 9.5 3Zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z"/>
+        </symbol>
+
+        <symbol id="icon-file" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm0 2.5L17.5 8H14V4.5ZM8 13h8v2H8v-2Zm0 4h8v2H8v-2Zm0-8h4v2H8V9Z"/>
+        </symbol>
+
+        <symbol id="icon-eye" viewBox="0 0 24 24">
+            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5Zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+        </symbol>
+
+        <symbol id="icon-logout" viewBox="0 0 24 24">
+            <path d="M10 17v-2h4v-2h-4v-2l-4 3 4 3Zm-6 4V3h9v2H6v14h7v2H4Zm11.5-4.5-1.42-1.42L16.17 13H11v-2h5.17l-2.09-2.08L15.5 7.5 20 12l-4.5 4.5Z"/>
+        </symbol>
+
+        <symbol id="icon-filter" viewBox="0 0 24 24">
+            <path d="M3 5h18v2H3V5Zm4 6h10v2H7v-2Zm3 6h4v2h-4v-2Z"/>
+        </symbol>
+    </svg>
+
+    <div class="reportes-bg">
+        <img
+            src="{{ url_for('static', filename='UNAJ capilla.png') }}"
+            alt="Campus Universidad Nacional de Juliaca"
+            class="reportes-bg-img"
+        >
+
+        <div class="reportes-bg-wash"></div>
+        <div class="reportes-bg-grid"></div>
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+    </div>
+
+    {% set pagina_activa = 'reportes' %}
+    {% include 'componentes/menu_admin.html' %}
+
+    <main class="reportes-main">
+        <header class="reportes-header">
+            <div class="header-copy">
+                <span class="header-kicker">Administración · Reportes</span>
+
+                <h1>
+                    Gestión de incidencias
+                    <strong>Pabellón Académico</strong>
+                </h1>
+
+                <p>
+                    Revisa las incidencias registradas por estudiantes, filtra por estado,
+                    prioridad o categoría, y entra al detalle para registrar acciones.
+                </p>
+            </div>
+
+            <div class="header-actions">
+                <a href="{{ url_for('reportes.panel_reportes') }}" class="btn btn-soft">
+                    Actualizar
+                </a>
+
+                <a href="{{ url_for('acciones.panel_acciones') }}" class="btn btn-ghost">
+                    Ver acciones
+                </a>
+
+                <a href="{{ url_for('login.cerrar_sesion') }}" class="btn btn-danger">
+                    <svg><use href="#icon-logout"></use></svg>
+                    Salir
+                </a>
+            </div>
+        </header>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                <section class="flash-zone">
+                    {% for categoria, mensaje in mensajes %}
+                        <article class="flash-card {{ categoria }}">
+                            <span>
+                                {% if categoria == 'success' %}
+                                    ✓
+                                {% elif categoria == 'danger' %}
+                                    !
+                                {% elif categoria == 'warning' %}
+                                    ⚠
+                                {% else %}
+                                    i
+                                {% endif %}
+                            </span>
+
+                            <p>{{ mensaje }}</p>
+                        </article>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="summary-grid">
+            <article class="summary-card featured">
+                <div>
+                    <span>Total reportes</span>
+                    <strong>{{ resumen.total or 0 }}</strong>
+                    <p>Incidencias registradas en el sistema.</p>
+                </div>
+
+                <div class="summary-orb">
+                    <svg><use href="#icon-file"></use></svg>
+                </div>
+            </article>
+
+            <article class="summary-card">
+                <span>Nuevas</span>
+                <strong>{{ resumen.nuevas or 0 }}</strong>
+                <p>Pendientes de revisión inicial.</p>
+            </article>
+
+            <article class="summary-card">
+                <span>En proceso</span>
+                <strong>{{ resumen.en_proceso or 0 }}</strong>
+                <p>Reportes con atención activa.</p>
+            </article>
+
+            <article class="summary-card danger">
+                <span>Críticas</span>
+                <strong>{{ resumen.criticas or 0 }}</strong>
+                <p>Incidencias de mayor prioridad.</p>
+            </article>
+        </section>
+
+        <section class="filters-panel">
+            <form method="GET" action="{{ url_for('reportes.panel_reportes') }}" class="filters-form">
+                <label class="admin-search">
+                    <svg><use href="#icon-search"></use></svg>
+
+                    <input
+                        type="search"
+                        name="q"
+                        id="adminSearch"
+                        value="{{ filtros.q }}"
+                        placeholder="Buscar reportes, usuarios, laboratorios..."
+                        autocomplete="off"
+                    >
+                </label>
+
+                <label class="filter-select">
+                    <span>Estado</span>
+
+                    <select name="estado">
+                        <option value="">Todos</option>
+
+                        {% for valor, texto in estados.items() %}
+                            <option value="{{ valor }}" {% if filtros.estado == valor %}selected{% endif %}>
+                                {{ texto }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="filter-select">
+                    <span>Prioridad</span>
+
+                    <select name="prioridad">
+                        <option value="">Todas</option>
+
+                        {% for valor, texto in prioridades.items() %}
+                            <option value="{{ valor }}" {% if filtros.prioridad == valor %}selected{% endif %}>
+                                {{ texto }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="filter-select">
+                    <span>Categoría</span>
+
+                    <select name="categoria">
+                        <option value="">Todas</option>
+
+                        {% for valor, texto in categorias.items() %}
+                            <option value="{{ valor }}" {% if filtros.categoria == valor %}selected{% endif %}>
+                                {{ texto }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <button type="submit" class="btn btn-primary">
+                    <svg><use href="#icon-filter"></use></svg>
+                    Filtrar
+                </button>
+
+                <a href="{{ url_for('reportes.panel_reportes') }}" class="btn btn-ghost">
+                    Limpiar
+                </a>
+            </form>
+        </section>
+
+        <section class="reportes-panel">
+            <div class="panel-heading">
+                <div>
+                    <span>Incidencias</span>
+                    <h2>Reportes registrados</h2>
+                </div>
+
+                <small>
+                    {{ reportes|length }} resultado{% if reportes|length != 1 %}s{% endif %}
+                </small>
+            </div>
+
+            {% if reportes %}
+                <div class="reportes-list">
+                    {% for reporte in reportes %}
+                        <article
+                            class="admin-report-card"
+                            data-search-text="
+                                {{ reporte.titulo }}
+                                {{ reporte.descripcion }}
+                                {{ reporte.laboratorio }}
+                                {{ reporte.estudiante_nombre }}
+                                {{ reporte.estudiante_apellido }}
+                                {{ reporte.estudiante_correo }}
+                                {{ reporte.estado_texto }}
+                                {{ reporte.prioridad_texto }}
+                                {{ reporte.categoria_texto }}
+                            "
+                        >
+                            <div class="report-left">
+                                <div class="report-icon prioridad-{{ reporte.prioridad }}">
+                                    {% if reporte.categoria == 'ambiental' %}
+                                        ♧
+                                    {% else %}
+                                        ◆
+                                    {% endif %}
+                                </div>
+
+                                <div class="report-copy">
+                                    <div class="report-title-row">
+                                        <div>
+                                            <span class="report-code">
+                                                REP-{{ "%04d"|format(reporte.id_incidencia) }}
+                                            </span>
+
+                                            <h3>{{ reporte.titulo }}</h3>
+                                        </div>
+
+                                        <span class="state-pill estado-{{ reporte.estado }}">
+                                            {{ reporte.estado_texto }}
+                                        </span>
+                                    </div>
+
+                                    <p>{{ reporte.descripcion }}</p>
+
+                                    <div class="report-meta">
+                                        <span>
+                                            Estudiante:
+                                            {{ reporte.estudiante_nombre }}
+                                            {{ reporte.estudiante_apellido }}
+                                        </span>
+
+                                        <span>{{ reporte.estudiante_correo }}</span>
+
+                                        <span>{{ reporte.laboratorio }}</span>
+
+                                        <span>{{ reporte.fecha_reporte }}</span>
+                                    </div>
+
+                                    <div class="report-tags">
+                                        <span class="tag categoria-{{ reporte.categoria }}">
+                                            {{ reporte.categoria_texto }}
+                                        </span>
+
+                                        <span class="tag prioridad-{{ reporte.prioridad }}">
+                                            {{ reporte.prioridad_texto }}
+                                        </span>
+
+                                        <span class="tag estado-{{ reporte.estado }}">
+                                            {{ reporte.estado_texto }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="report-actions">
+                                <div class="actions-summary">
+                                    <article>
+                                        <span>Acciones</span>
+                                        <strong>{{ reporte.total_acciones }}</strong>
+                                    </article>
+
+                                    <article>
+                                        <span>Pendientes</span>
+                                        <strong>{{ reporte.acciones_pendientes }}</strong>
+                                    </article>
+
+                                    <article>
+                                        <span>Finalizadas</span>
+                                        <strong>{{ reporte.acciones_finalizadas }}</strong>
+                                    </article>
+                                </div>
+
+                                <a
+                                    href="{{ url_for('reportes.detalle_reporte', id_incidencia=reporte.id_incidencia) }}"
+                                    class="btn-detail"
+                                >
+                                    <svg><use href="#icon-eye"></use></svg>
+                                    Ver acciones
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg><use href="#icon-search"></use></svg>
+                    </div>
+
+                    <h3>No se encontraron reportes</h3>
+
+                    <p>
+                        Intenta cambiar los filtros o limpiar la búsqueda para ver
+                        todas las incidencias registradas.
+                    </p>
+
+                    <a href="{{ url_for('reportes.panel_reportes') }}" class="btn btn-primary">
+                        Mostrar todos
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("mousemove", (event) => {
+            const x = event.clientX / window.innerWidth;
+            const y = event.clientY / window.innerHeight;
+
+            document.documentElement.style.setProperty("--mx", `${x * 100}%`);
+            document.documentElement.style.setProperty("--my", `${y * 100}%`);
+        });
+
+        document.querySelectorAll(".flash-card").forEach((card) => {
+            setTimeout(() => {
+                card.classList.add("hide-flash");
+
+                setTimeout(() => {
+                    card.remove();
+                }, 420);
+            }, 4300);
+        });
+
+        const adminSearch = document.getElementById("adminSearch");
+        const reportCards = document.querySelectorAll(".admin-report-card");
+
+        if (adminSearch) {
+            adminSearch.addEventListener("input", () => {
+                const value = adminSearch.value
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .trim();
+
+                reportCards.forEach((card) => {
+                    const content = (card.dataset.searchText || card.textContent)
+                        .toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "");
+
+                    card.style.display = content.includes(value) ? "" : "none";
+                });
+            });
+        }
+
+        document.querySelectorAll(".admin-report-card").forEach((card) => {
+            card.addEventListener("mousemove", (event) => {
+                const rect = card.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                card.style.setProperty("--card-x", `${x}px`);
+                card.style.setProperty("--card-y", `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>

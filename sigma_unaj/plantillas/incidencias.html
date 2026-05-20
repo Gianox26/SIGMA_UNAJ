@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block titulo %}Incidencias - Reportes UNAJ{% endblock %}
+
+{% block contenido %}
+<h2>Mis incidencias</h2>
+<a class="btn" href="{{ url_for('main.crear_incidencia') }}">Nueva incidencia</a>
+
+{% if incidencias %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for incidencia in incidencias %}
+        <tr>
+            <td>{{ incidencia.id }}</td>
+            <td>{{ incidencia.titulo }}</td>
+            <td>{{ incidencia.descripcion }}</td>
+            <td>{{ incidencia.estado }}</td>
+            <td>{{ incidencia.usuario }}</td>
+            <td>{{ incidencia.fecha }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No hay incidencias registradas.</p>
+{% endif %}
+{% endblock %}

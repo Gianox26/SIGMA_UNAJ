@@ -1,0 +1,65 @@
+<aside class="admin-sidebar">
+    <div class="brand-zone">
+        <img
+            src="https://www.portal.unaj.edu.pe/sites/default/files/archivos/LOGO_BLANCO.png"
+            alt="Logo UNAJ"
+        >
+    </div>
+
+    <nav class="admin-menu" aria-label="Menú administrador">
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="admin-menu-link {% if pagina_activa == 'dashboard' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/>
+            </svg>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{{ url_for('reportes.panel_reportes') }}"
+           class="admin-menu-link {% if pagina_activa == 'reportes' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2 20 5v6c0 5.25-3.45 9.86-8 11-4.55-1.14-8-5.75-8-11V5l8-3Zm0 2.2L6 6.45V11c0 4.12 2.52 7.72 6 8.82 3.48-1.1 6-4.7 6-8.82V6.45L12 4.2Zm3.7 5.1 1.4 1.4-5.8 5.8-3.4-3.4 1.4-1.4 2 2 4.4-4.4Z"/>
+            </svg>
+            <span>Reportes</span>
+        </a>
+
+        <a href="{{ url_for('acciones.panel_acciones') }}"
+           class="admin-menu-link {% if pagina_activa == 'acciones' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2 13.6 8.4 20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6L12 2Zm7 12 1 4 4 1-4 1-1 4-1-4-4-1 4-1 1-4Z"/>
+            </svg>
+            <span>Acciones</span>
+        </a>
+
+    </nav>
+
+    <section class="location-mini">
+        <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/>
+            </svg>
+        </div>
+
+        <div>
+            <strong>Sede La Capilla</strong>
+            <span>Juliaca, Puno</span>
+        </div>
+    </section>
+
+    <section class="admin-profile-card">
+        {% set usuario_actual = usuario if usuario is defined else g.usuario %}
+
+        <div class="profile-avatar">
+            {{ usuario_actual.nombre[0] }}{{ usuario_actual.apellido[0] }}
+        </div>
+
+        <div>
+            <strong>{{ usuario_actual.nombre }} {{ usuario_actual.apellido }}</strong>
+            <span>Administrador</span>
+            <small>
+                <i></i>
+                En línea
+            </small>
+        </div>
+    </section>
+</aside>

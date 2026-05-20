@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block titulo %}Crear incidencia - Reportes UNAJ{% endblock %}
+
+{% block contenido %}
+<h2>Crear incidencia</h2>
+
+<form method="POST">
+    <label for="titulo">Título</label>
+    <input type="text" id="titulo" name="titulo" required>
+
+    <label for="descripcion">Descripción</label>
+    <textarea id="descripcion" name="descripcion" required></textarea>
+
+    <button type="submit">Guardar incidencia</button>
+</form>
+{% endblock %}

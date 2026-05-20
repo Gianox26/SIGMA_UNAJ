@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nuevo Reporte | Sistema de Reportes UNAJ</title>
+
+    <!-- Este CSS contiene el nuevo menu_est.html -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo-dashboard.css') }}">
+
+    <!-- Este CSS mantiene el diseño propio del formulario de reporte -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo-reporte.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+    <div class="report-background">
+        <img
+            src="https://www.portal.unaj.edu.pe/sites/default/files/2026-04/supervision-rectora-unaj.jpg"
+            alt="Universidad Nacional de Juliaca - Sede La Capilla"
+            class="background-image"
+        >
+
+        <div class="background-wash"></div>
+        <div class="background-grid"></div>
+        <div class="background-glow glow-one"></div>
+        <div class="background-glow glow-two"></div>
+    </div>
+
+    {% set pagina_activa = 'crear' %}
+    {% include 'componentes/menu_est.html' %}
+
+    <main class="report-main">
+        <header class="report-hero">
+
+
+
+        </header>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                <section class="flash-zone">
+                    {% for categoria, mensaje in mensajes %}
+                        <article class="flash-card {{ categoria }}">
+                            <span>
+                                {% if categoria == 'success' %}
+                                    ✓
+                                {% elif categoria == 'danger' %}
+                                    !
+                                {% elif categoria == 'warning' %}
+                                    ⚠
+                                {% else %}
+                                    i
+                                {% endif %}
+                            </span>
+
+                            <p>{{ mensaje }}</p>
+                        </article>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="report-layout">
+            <form
+                class="report-form-card"
+                method="POST"
+                action="{{ url_for('reporte.nuevo_reporte') }}"
+                autocomplete="off"
+                id="formReporte"
+            >
+                <div class="panel-header">
+                    <div>
+                        <span>Formulario de incidencia</span>
+                        <h2>Datos del reporte</h2>
+                    </div>
+
+                    <div class="draft-badge">
+                        <span></span>
+                        Borrador
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field field-full">
+                        <label for="laboratorio">Ambiente, laboratorio o zona</label>
+
+                        <div class="input-wrap">
+                            <input
+                                type="text"
+                                id="laboratorio"
+                                name="laboratorio"
+                                placeholder="Ejemplo: Laboratorio de Física, aula, pasillo principal..."
+                                value="{{ form.get('laboratorio', '') }}"
+                                required
+                            >
+                        </div>
+
+                        <small>
+                            Escribe el lugar donde ocurre la incidencia dentro del Pabellón Académico.
+                        </small>
+                    </div>
+
+                    <div class="field field-full">
+                        <label for="descripcion_original">Descripción inicial del estudiante</label>
+
+                        <div class="textarea-wrap">
+                            <textarea
+                                id="descripcion_original"
+                                placeholder="Ejemplo: Hay filtración de agua cerca de equipos eléctricos..."
+                            >{{ form.get('descripcion', '') }}</textarea>
+                        </div>
+
+                        <small>
+                            Escribe lo que observaste con tus propias palabras. El asistente usará solo esta información.
+                        </small>
+                    </div>
+
+                    <div class="ai-panel field-full">
+                        <div>
+                            <span>Asistente de redacción</span>
+
+                            <p>
+                                Genera un título, categoría, prioridad y descripción formal
+                                usando únicamente la información escrita por el estudiante.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-ai" id="btnGenerarIA">
+                            <span>Generar con IA</span>
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 2 13.6 8.4 20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6L12 2Zm7 12 1 4 4 1-4 1-1 4-1-4-4-1 4-1 1-4ZM5 14l.8 3.2L9 18l-3.2.8L5 22l-.8-3.2L1 18l3.2-.8L5 14Z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="ai-status field-full" id="aiStatus" hidden></div>
+
+                    <div class="field field-full">
+                        <label for="titulo">Título del reporte</label>
+
+                        <div class="input-wrap">
+                            <input
+                                type="text"
+                                id="titulo"
+                                name="titulo"
+                                placeholder="Ejemplo: Filtración de agua en Laboratorio de Física"
+                                value="{{ form.get('titulo', '') }}"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="categoria">Categoría</label>
+
+                        <div class="select-wrap">
+                            <select id="categoria" name="categoria" required>
+                                <option value="">Seleccionar categoría</option>
+
+                                <option
+                                    value="calidad"
+                                    {% if form.get('categoria') == 'calidad' %}selected{% endif %}
+                                >
+                                    Calidad
+                                </option>
+
+                                <option
+                                    value="ambiental"
+                                    {% if form.get('categoria') == 'ambiental' %}selected{% endif %}
+                                >
+                                    Ambiental
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="prioridad">Prioridad</label>
+
+                        <div class="select-wrap">
+                            <select id="prioridad" name="prioridad" required>
+                                <option value="">Seleccionar prioridad</option>
+
+                                <option
+                                    value="baja"
+                                    {% if form.get('prioridad') == 'baja' %}selected{% endif %}
+                                >
+                                    Baja
+                                </option>
+
+                                <option
+                                    value="media"
+                                    {% if form.get('prioridad') == 'media' %}selected{% endif %}
+                                >
+                                    Media
+                                </option>
+
+                                <option
+                                    value="alta"
+                                    {% if form.get('prioridad') == 'alta' %}selected{% endif %}
+                                >
+                                    Alta
+                                </option>
+
+                                <option
+                                    value="critica"
+                                    {% if form.get('prioridad') == 'critica' %}selected{% endif %}
+                                >
+                                    Crítica
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="field field-full">
+                        <label for="descripcion">Descripción final del reporte</label>
+
+                        <div class="textarea-wrap">
+                            <textarea
+                                id="descripcion"
+                                name="descripcion"
+                                placeholder="Describe el problema, ubicación, riesgo observado y cualquier dato útil para su atención."
+                                required
+                            >{{ form.get('descripcion', '') }}</textarea>
+                        </div>
+                    </div>
+                    <div class="file-upload-box">
+                        <input
+                            type="file"
+                            id="evidencia_archivo"
+                            name="evidencia_archivo"
+                            accept="image/png,image/jpeg,image/jpg,image/webp"
+                        >
+
+                        <div class="file-upload-content">
+                            <strong>Presione aqui para subir imagen de evidencia</strong>
+                            <span>PNG, JPG, JPEG o WEBP</span>
+                            <small>Puedes tomar una foto desde el celular o seleccionar una imagen.</small>
+                        </div>
+                    </div>
+
+                    <div class="preview-evidencia" id="previewEvidencia" hidden>
+                        <span>Vista previa</span>
+                        <img id="previewImagen" alt="Vista previa de la evidencia">
+                        <button type="button" id="btnQuitarEvidencia">
+                            Quitar imagen
+                        </button>
+                    </div>
+
+                    <small>
+                        Puedes dejarlo vacío si no tienes evidencia digital.
+                    </small>
+                </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ url_for('dashboard.estudiante') }}" class="btn btn-ghost">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn-submit" id="btnEnviar">
+                        <span>Registrar reporte</span>
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M13 5 20 12l-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <aside class="guide-card">
+                <div class="guide-header">
+                    <span>Guía rápida</span>
+                    <h2>Cómo hacer un buen reporte</h2>
+                </div>
+
+                <div class="guide-list">
+                    <article>
+                        <span>1</span>
+
+                        <div>
+                            <strong>Ubica el ambiente</strong>
+                            <p>Indica laboratorio, pasillo, aula, oficina o zona exacta.</p>
+                        </div>
+                    </article>
+
+                    <article>
+                        <span>2</span>
+
+                        <div>
+                            <strong>Describe lo observado</strong>
+                            <p>Explica el problema de forma clara, sin exagerar ni inventar datos.</p>
+                        </div>
+                    </article>
+
+                    <article>
+                        <span>3</span>
+
+                        <div>
+                            <strong>Menciona el riesgo</strong>
+                            <p>Indica si afecta clases, equipos, seguridad, limpieza o continuidad académica.</p>
+                        </div>
+                    </article>
+
+                    <article>
+                        <span>4</span>
+
+                        <div>
+                            <strong>Revisa antes de enviar</strong>
+                            <p>El reporte quedará asociado a tu usuario dentro del sistema.</p>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="example-card">
+                    <span>Ejemplo útil</span>
+
+                    <p>
+                        Se observa filtración de agua cerca del área de equipos eléctricos
+                        del Laboratorio de Física. La situación puede afectar la seguridad
+                        y el desarrollo normal de las actividades académicas.
+                    </p>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <script>
+        const btnGenerarIA = document.getElementById("btnGenerarIA");
+        const aiStatus = document.getElementById("aiStatus");
+
+        const inputLaboratorio = document.getElementById("laboratorio");
+        const descripcionOriginal = document.getElementById("descripcion_original");
+
+        const inputTitulo = document.getElementById("titulo");
+        const inputDescripcion = document.getElementById("descripcion");
+        const selectCategoria = document.getElementById("categoria");
+        const selectPrioridad = document.getElementById("prioridad");
+
+        const formReporte = document.getElementById("formReporte");
+        const btnEnviar = document.getElementById("btnEnviar");
+
+        function mostrarEstadoIA(mensaje, tipo = "info") {
+            aiStatus.hidden = false;
+            aiStatus.className = `ai-status ${tipo}`;
+            aiStatus.textContent = mensaje;
+        }
+
+        btnGenerarIA.addEventListener("click", async () => {
+            const descripcion = descripcionOriginal.value.trim() || inputDescripcion.value.trim();
+            const laboratorio = inputLaboratorio.value.trim();
+
+            if (descripcion.length < 15) {
+                mostrarEstadoIA(
+                    "Escribe una descripción más detallada para generar el reporte.",
+                    "warning"
+                );
+
+                descripcionOriginal.focus();
+                return;
+            }
+
+            btnGenerarIA.disabled = true;
+            btnGenerarIA.classList.add("loading");
+            btnGenerarIA.querySelector("span").textContent = "Generando...";
+            mostrarEstadoIA("Analizando la descripción del estudiante...", "info");
+
+            try {
+                const respuesta = await fetch("{{ url_for('reporte.generar_con_ia') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        descripcion: descripcion,
+                        laboratorio: laboratorio,
+                        categoria: selectCategoria.value,
+                        prioridad: selectPrioridad.value
+                    })
+                });
+
+                const data = await respuesta.json();
+
+                if (!respuesta.ok || !data.ok) {
+                    mostrarEstadoIA(
+                        data.mensaje || "No se pudo generar el reporte.",
+                        "danger"
+                    );
+
+                    return;
+                }
+
+                inputTitulo.value = data.titulo || "";
+                inputDescripcion.value = data.descripcion || "";
+                selectCategoria.value = data.categoria || "";
+                selectPrioridad.value = data.prioridad || "";
+
+                if (data.laboratorio) {
+                    inputLaboratorio.value = data.laboratorio;
+                }
+
+                mostrarEstadoIA(
+                    "Reporte generado. Revisa la información antes de registrarlo.",
+                    "success"
+                );
+
+                inputTitulo.classList.add("field-updated");
+                inputDescripcion.classList.add("field-updated");
+
+                setTimeout(() => {
+                    inputTitulo.classList.remove("field-updated");
+                    inputDescripcion.classList.remove("field-updated");
+                }, 900);
+
+            } catch (error) {
+                mostrarEstadoIA(
+                    "Ocurrió un error al conectar con el generador.",
+                    "danger"
+                );
+            } finally {
+                btnGenerarIA.disabled = false;
+                btnGenerarIA.classList.remove("loading");
+                btnGenerarIA.querySelector("span").textContent = "Generar con IA";
+            }
+        });
+
+        formReporte.addEventListener("submit", () => {
+            btnEnviar.disabled = true;
+            btnEnviar.classList.add("loading");
+            btnEnviar.querySelector("span").textContent = "Registrando reporte...";
+        });
+
+        document.addEventListener("mousemove", (event) => {
+            const x = event.clientX / window.innerWidth;
+            const y = event.clientY / window.innerHeight;
+
+            document.documentElement.style.setProperty("--mx", `${x * 100}%`);
+            document.documentElement.style.setProperty("--my", `${y * 100}%`);
+        });
+
+        document.querySelectorAll(".flash-card").forEach((card) => {
+            setTimeout(() => {
+                card.classList.add("hide-flash");
+
+                setTimeout(() => {
+                    card.remove();
+                }, 420);
+            }, 4300);
+        });
+        
+    </script>
+</body>
+</html>

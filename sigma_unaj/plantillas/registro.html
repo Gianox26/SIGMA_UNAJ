@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block titulo %}Registro - Reportes UNAJ{% endblock %}
+
+{% block estilos %}
+<link rel="stylesheet" href="{{ url_for('static', filename='estilo-login.css') }}">
+{% endblock %}
+
+{% block contenido %}
+<div class="login-contenedor">
+    <h2>Crear cuenta</h2>
+    <form method="POST">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" required>
+
+        <label for="correo">Correo</label>
+        <input type="email" id="correo" name="correo" required>
+
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Registrarme</button>
+    </form>
+</div>
+{% endblock %}

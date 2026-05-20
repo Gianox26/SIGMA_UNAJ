@@ -1,0 +1,95 @@
+<aside class="est-sidebar">
+    <div class="est-brand-zone">
+        <img
+            src="https://www.portal.unaj.edu.pe/sites/default/files/archivos/LOGO_BLANCO.png"
+            alt="Logo UNAJ"
+        >
+
+        <strong>Panel estudiante</strong>
+        <span>Sistema de Reportes UNAJ</span>
+    </div>
+
+    <nav class="est-menu" aria-label="Menú estudiante">
+        <a href="{{ url_for('dashboard.estudiante') }}"
+           class="est-menu-link {% if pagina_activa == 'dashboard' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/>
+            </svg>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{{ url_for('reporte.nuevo_reporte') }}"
+           class="est-menu-link {% if pagina_activa == 'crear' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7V4Z"/>
+            </svg>
+            <span>Nuevo reporte</span>
+        </a>
+
+        <a href="{{ url_for('dashboard.estudiante') }}#mis-incidencias"
+           class="est-menu-link {% if pagina_activa == 'reportes' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 2h9l5 5v15H6V2Zm8 1.5V8h4.5L14 3.5ZM8 11h8v2H8v-2Zm0 4h8v2H8v-2Zm0-8h4v2H8V7Z"/>
+            </svg>
+            <span>Mis reportes</span>
+        </a>
+
+        <a href="{{ url_for('dashboard.estudiante') }}#actividad"
+           class="est-menu-link {% if pagina_activa == 'actividad' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.4 3.7 2.2-1 1.7L11 13.5V6h2v6.4Z"/>
+            </svg>
+            <span>Actividad</span>
+        </a>
+
+        <a href="{{ url_for('dashboard.estudiante') }}#notificaciones"
+           class="est-menu-link {% if pagina_activa == 'notificaciones' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 22a2.6 2.6 0 0 0 2.55-2.1h-5.1A2.6 2.6 0 0 0 12 22Zm7-5-1.8-2.3V10a5.2 5.2 0 0 0-4-5.05V3a1.2 1.2 0 0 0-2.4 0v1.95a5.2 5.2 0 0 0-4 5.05v4.7L5 17v1h14v-1Z"/>
+            </svg>
+            <span>Notificaciones</span>
+
+            {% if total_no_leidas is defined and total_no_leidas > 0 %}
+                <b>{{ total_no_leidas }}</b>
+            {% endif %}
+        </a>
+
+        <a href="{{ url_for('login.cerrar_sesion') }}"
+           class="est-menu-link logout">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M10 17v-2h4v-2h-4v-2l-4 3 4 3Zm-6 4V3h9v2H6v14h7v2H4Zm11.5-4.5-1.42-1.42L16.17 13H11v-2h5.17l-2.09-2.08L15.5 7.5 20 12l-4.5 4.5Z"/>
+            </svg>
+            <span>Salir</span>
+        </a>
+    </nav>
+
+    <section class="est-location-mini">
+        <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/>
+            </svg>
+        </div>
+
+        <div>
+            <strong>Pabellón Académico</strong>
+            <span>Sede La Capilla</span>
+        </div>
+    </section>
+
+    <section class="est-profile-card">
+        {% set estudiante_actual = usuario if usuario is defined else g.usuario %}
+
+        <div class="est-profile-avatar">
+            {{ estudiante_actual.nombre[0] }}{{ estudiante_actual.apellido[0] }}
+        </div>
+
+        <div>
+            <strong>{{ estudiante_actual.nombre }} {{ estudiante_actual.apellido }}</strong>
+            <span>Estudiante</span>
+            <small>
+                <i></i>
+                Sesión activa
+            </small>
+        </div>
+    </section>
+</aside>

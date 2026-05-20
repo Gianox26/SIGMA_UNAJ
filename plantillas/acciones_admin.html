@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Acciones | Administración UNAJ</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo-reportes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo-acciones.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+    <svg class="svg-icons" aria-hidden="true">
+        <symbol id="icon-search" viewBox="0 0 24 24">
+            <path d="M10.5 3a7.5 7.5 0 0 1 5.92 12.1l4.24 4.24-1.42 1.42L15 16.52A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/>
+        </symbol>
+
+        <symbol id="icon-filter" viewBox="0 0 24 24">
+            <path d="M3 5h18v2H3V5Zm4 6h10v2H7v-2Zm3 6h4v2h-4v-2Z"/>
+        </symbol>
+
+        <symbol id="icon-eye" viewBox="0 0 24 24">
+            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5Zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+        </symbol>
+
+        <symbol id="icon-action" viewBox="0 0 24 24">
+            <path d="M12 2 13.6 8.4 20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6L12 2Zm7 12 1 4 4 1-4 1-1 4-1-4-4-1 4-1 1-4ZM5 14l.8 3.2L9 18l-3.2.8L5 22l-.8-3.2L1 18l3.2-.8L5 14Z"/>
+        </symbol>
+
+        <symbol id="icon-logout" viewBox="0 0 24 24">
+            <path d="M10 17v-2h4v-2h-4v-2l-4 3 4 3Zm-6 4V3h9v2H6v14h7v2H4Zm11.5-4.5-1.42-1.42L16.17 13H11v-2h5.17l-2.09-2.08L15.5 7.5 20 12l-4.5 4.5Z"/>
+        </symbol>
+    </svg>
+
+    <div class="reportes-bg">
+        <img
+            src="{{ url_for('static', filename='UNAJ capilla.png') }}"
+            alt="Universidad Nacional de Juliaca - Sede La Capilla"
+            class="reportes-bg-img"
+        >
+
+        <div class="reportes-bg-wash"></div>
+        <div class="reportes-bg-grid"></div>
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+    </div>
+
+    {% set pagina_activa = 'acciones' %}
+    {% include 'componentes/menu_admin.html' %}
+
+    <main class="reportes-main">
+        <header class="reportes-header">
+            <div class="header-copy">
+                <span class="header-kicker">Administración · Acciones</span>
+
+                <h1>
+                    Seguimiento de
+                    <strong>acciones administrativas</strong>
+                </h1>
+
+                <p>
+                    Revisa las acciones registradas frente a cada incidencia,
+                    controla responsables, estados de atención y seguimiento del caso.
+                </p>
+            </div>
+
+            <div class="header-actions">
+                <a href="{{ url_for('acciones.panel_acciones') }}" class="btn btn-soft">
+                    Actualizar
+                </a>
+
+                <a href="{{ url_for('reportes.panel_reportes') }}" class="btn btn-ghost">
+                    Ver reportes
+                </a>
+
+                <a href="{{ url_for('login.cerrar_sesion') }}" class="btn btn-danger">
+                    <svg><use href="#icon-logout"></use></svg>
+                    Salir
+                </a>
+            </div>
+        </header>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                <section class="flash-zone">
+                    {% for categoria, mensaje in mensajes %}
+                        <article class="flash-card {{ categoria }}">
+                            <span>
+                                {% if categoria == 'success' %}
+                                    ✓
+                                {% elif categoria == 'danger' %}
+                                    !
+                                {% elif categoria == 'warning' %}
+                                    ⚠
+                                {% else %}
+                                    i
+                                {% endif %}
+                            </span>
+
+                            <p>{{ mensaje }}</p>
+                        </article>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="summary-grid acciones-summary-grid">
+            <article class="summary-card featured">
+                <div>
+                    <span>Total acciones</span>
+                    <strong>{{ resumen.total or 0 }}</strong>
+                    <p>Acciones registradas frente a incidencias.</p>
+                </div>
+
+                <div class="summary-orb">
+                    <svg><use href="#icon-action"></use></svg>
+                </div>
+            </article>
+
+            <article class="summary-card">
+                <span>Pendientes</span>
+                <strong>{{ resumen.pendientes or 0 }}</strong>
+                <p>Acciones que aún requieren atención.</p>
+            </article>
+
+            <article class="summary-card">
+                <span>En proceso</span>
+                <strong>{{ resumen.en_proceso or 0 }}</strong>
+                <p>Acciones actualmente en desarrollo.</p>
+            </article>
+
+            <article class="summary-card success-card">
+                <span>Finalizadas</span>
+                <strong>{{ resumen.finalizadas or 0 }}</strong>
+                <p>Acciones completadas por el equipo.</p>
+            </article>
+        </section>
+
+        <section class="filters-panel">
+            <form method="GET" action="{{ url_for('acciones.panel_acciones') }}" class="filters-form acciones-filters">
+                <label class="admin-search">
+                    <svg><use href="#icon-search"></use></svg>
+
+                    <input
+                        type="search"
+                        name="q"
+                        id="adminSearch"
+                        value="{{ filtros.q }}"
+                        placeholder="Buscar acción, reporte, estudiante, responsable..."
+                        autocomplete="off"
+                    >
+                </label>
+
+                <label class="filter-select">
+                    <span>Estado acción</span>
+
+                    <select name="estado">
+                        <option value="">Todos</option>
+
+                        {% for valor, texto in estados_accion.items() %}
+                            <option value="{{ valor }}" {% if filtros.estado == valor %}selected{% endif %}>
+                                {{ texto }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="filter-select">
+                    <span>Responsable</span>
+
+                    <select name="responsable">
+                        <option value="">Todos</option>
+
+                        {% for responsable in responsables %}
+                            <option
+                                value="{{ responsable.id_usuario }}"
+                                {% if filtros.responsable|string == responsable.id_usuario|string %}selected{% endif %}
+                            >
+                                {{ responsable.nombre }} {{ responsable.apellido }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="filter-select">
+                    <span>Estado reporte</span>
+
+                    <select name="estado_incidencia">
+                        <option value="">Todos</option>
+
+                        {% for valor, texto in estados_incidencia.items() %}
+                            <option value="{{ valor }}" {% if filtros.estado_incidencia == valor %}selected{% endif %}>
+                                {{ texto }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <button type="submit" class="btn btn-primary">
+                    <svg><use href="#icon-filter"></use></svg>
+                    Filtrar
+                </button>
+
+                <a href="{{ url_for('acciones.panel_acciones') }}" class="btn btn-ghost">
+                    Limpiar
+                </a>
+            </form>
+        </section>
+
+        <section class="reportes-panel acciones-panel">
+            <div class="panel-heading">
+                <div>
+                    <span>Acciones registradas</span>
+                    <h2>Seguimiento operativo</h2>
+                </div>
+
+                <small>
+                    {{ acciones|length }} resultado{% if acciones|length != 1 %}s{% endif %}
+                </small>
+            </div>
+
+            {% if acciones %}
+                <div class="acciones-list">
+                    {% for accion in acciones %}
+                        <article
+                            class="accion-admin-card"
+                            data-search-text="
+                                {{ accion.descripcion }}
+                                {{ accion.incidencia_titulo }}
+                                {{ accion.incidencia_descripcion }}
+                                {{ accion.laboratorio }}
+                                {{ accion.estudiante_nombre }}
+                                {{ accion.estudiante_apellido }}
+                                {{ accion.estudiante_correo }}
+                                {{ accion.supervisor_nombre }}
+                                {{ accion.supervisor_apellido }}
+                                {{ accion.responsable_nombre }}
+                                {{ accion.responsable_apellido }}
+                                {{ accion.estado_texto }}
+                                {{ accion.incidencia_estado_texto }}
+                                {{ accion.prioridad_texto }}
+                                {{ accion.categoria_texto }}
+                            "
+                        >
+                            <div class="accion-main">
+                                <div class="accion-icon estado-accion-{{ accion.estado }}">
+                                    <svg><use href="#icon-action"></use></svg>
+                                </div>
+
+                                <div class="accion-copy">
+                                    <div class="accion-title-row">
+                                        <div>
+                                            <span class="report-code">
+                                                ACC-{{ "%04d"|format(accion.id_accion) }}
+                                            </span>
+
+                                            <h3>{{ accion.incidencia_titulo }}</h3>
+                                        </div>
+
+                                        <span class="state-pill estado-accion-{{ accion.estado }}">
+                                            {{ accion.estado_texto }}
+                                        </span>
+                                    </div>
+
+                                    <p>{{ accion.descripcion }}</p>
+
+                                    <div class="report-meta">
+                                        <span>
+                                            Estudiante:
+                                            {{ accion.estudiante_nombre }}
+                                            {{ accion.estudiante_apellido }}
+                                        </span>
+
+                                        <span>
+                                            Supervisor:
+                                            {{ accion.supervisor_nombre }}
+                                            {{ accion.supervisor_apellido }}
+                                        </span>
+
+                                        <span>
+                                            Responsable:
+                                            {% if accion.responsable_nombre %}
+                                                {{ accion.responsable_nombre }}
+                                                {{ accion.responsable_apellido }}
+                                            {% else %}
+                                                No asignado
+                                            {% endif %}
+                                        </span>
+
+                                        <span>{{ accion.laboratorio }}</span>
+                                        <span>Inicio: {{ accion.fecha_inicio }}</span>
+
+                                        {% if accion.fecha_fin %}
+                                            <span>Fin: {{ accion.fecha_fin }}</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="report-tags">
+                                        <span class="tag categoria-{{ accion.categoria }}">
+                                            {{ accion.categoria_texto }}
+                                        </span>
+
+                                        <span class="tag prioridad-{{ accion.prioridad }}">
+                                            {{ accion.prioridad_texto }}
+                                        </span>
+
+                                        <span class="tag estado-{{ accion.incidencia_estado }}">
+                                            Reporte: {{ accion.incidencia_estado_texto }}
+                                        </span>
+
+                                        <span class="tag estado-accion-{{ accion.estado }}">
+                                            Acción: {{ accion.estado_texto }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accion-side">
+                                <div class="accion-mini-grid">
+                                    <article>
+                                        <span>Reporte</span>
+                                        <strong>REP-{{ "%04d"|format(accion.id_incidencia) }}</strong>
+                                    </article>
+
+                                    <article>
+                                        <span>Prioridad</span>
+                                        <strong>{{ accion.prioridad_texto }}</strong>
+                                    </article>
+                                </div>
+
+                                <a
+                                    href="{{ url_for('acciones.detalle_accion', id_accion=accion.id_accion) }}"
+                                    class="btn-detail"
+                                >
+                                    <svg><use href="#icon-eye"></use></svg>
+                                    Ver detalle
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg><use href="#icon-search"></use></svg>
+                    </div>
+
+                    <h3>No se encontraron acciones</h3>
+
+                    <p>
+                        Todavía no existen acciones registradas o los filtros aplicados
+                        no coinciden con ningún resultado.
+                    </p>
+
+                    <a href="{{ url_for('acciones.panel_acciones') }}" class="btn btn-primary">
+                        Mostrar todas
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("mousemove", (event) => {
+            const x = event.clientX / window.innerWidth;
+            const y = event.clientY / window.innerHeight;
+
+            document.documentElement.style.setProperty("--mx", `${x * 100}%`);
+            document.documentElement.style.setProperty("--my", `${y * 100}%`);
+        });
+
+        document.querySelectorAll(".flash-card").forEach((card) => {
+            setTimeout(() => {
+                card.classList.add("hide-flash");
+
+                setTimeout(() => {
+                    card.remove();
+                }, 420);
+            }, 4300);
+        });
+
+        const adminSearch = document.getElementById("adminSearch");
+        const cards = document.querySelectorAll(".accion-admin-card");
+
+        if (adminSearch) {
+            adminSearch.addEventListener("input", () => {
+                const value = adminSearch.value
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .trim();
+
+                cards.forEach((card) => {
+                    const content = (card.dataset.searchText || card.textContent)
+                        .toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "");
+
+                    card.style.display = content.includes(value) ? "" : "none";
+                });
+            });
+        }
+
+        document.querySelectorAll(".accion-admin-card").forEach((card) => {
+            card.addEventListener("mousemove", (event) => {
+                const rect = card.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                card.style.setProperty("--card-x", `${x}px`);
+                card.style.setProperty("--card-y", `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>

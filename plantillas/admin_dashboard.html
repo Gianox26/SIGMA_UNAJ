@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administrador | Sistema de Reportes UNAJ</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo_admin.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+    <div class="admin-background">
+        <img
+            src="https://www.portal.unaj.edu.pe/sites/default/files/2026-04/supervision-rectora-unaj.jpg"
+            alt="Universidad Nacional de Juliaca - Sede La Capilla"
+            class="background-image"
+        >
+
+        <div class="background-overlay"></div>
+        <div class="background-grid"></div>
+        <div class="admin-glow glow-one"></div>
+        <div class="admin-glow glow-two"></div>
+    </div>
+
+    <svg class="svg-icons" aria-hidden="true">
+        <symbol id="icon-menu" viewBox="0 0 24 24">
+            <path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"/>
+        </symbol>
+
+        <symbol id="icon-search" viewBox="0 0 24 24">
+            <path d="M10.5 3a7.5 7.5 0 0 1 5.92 12.1l4.24 4.24-1.42 1.42L15 16.52A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/>
+        </symbol>
+
+        <symbol id="icon-dashboard" viewBox="0 0 24 24">
+            <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/>
+        </symbol>
+
+        <symbol id="icon-report" viewBox="0 0 24 24">
+            <path d="M6 2h9l5 5v15H6V2Zm8 1.5V8h4.5L14 3.5ZM8 11h8v2H8v-2Zm0 4h8v2H8v-2Zm0-8h4v2H8V7Z"/>
+        </symbol>
+
+        <symbol id="icon-users" viewBox="0 0 24 24">
+            <path d="M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM8.5 13C5.46 13 3 14.79 3 17v2h11v-2c0-2.21-2.46-4-5.5-4Zm7 1c-.63 0-1.23.08-1.78.23A4.6 4.6 0 0 1 16 18v1h5v-1.5c0-1.93-2.46-3.5-5.5-3.5Z"/>
+        </symbol>
+
+        <symbol id="icon-shield" viewBox="0 0 24 24">
+            <path d="M12 2 20 5v6c0 5.25-3.45 9.86-8 11-4.55-1.14-8-5.75-8-11V5l8-3Zm0 2.2L6 6.45V11c0 4.12 2.52 7.72 6 8.82 3.48-1.1 6-4.7 6-8.82V6.45L12 4.2Zm3.7 5.1 1.4 1.4-5.8 5.8-3.4-3.4 1.4-1.4 2 2 4.4-4.4Z"/>
+        </symbol>
+
+        <symbol id="icon-chart" viewBox="0 0 24 24">
+            <path d="M4 19h16v2H2V3h2v16Zm3-2V9h3v8H7Zm5 0V5h3v12h-3Zm5 0v-6h3v6h-3Z"/>
+        </symbol>
+
+        <symbol id="icon-settings" viewBox="0 0 24 24">
+            <path d="M19.43 12.98c.04-.32.07-.65.07-.98s-.02-.66-.07-.98l2.11-1.65-2-3.46-2.49 1a7.2 7.2 0 0 0-1.69-.98L15 3h-4l-.36 2.93c-.6.24-1.17.57-1.69.98l-2.49-1-2 3.46 2.11 1.65c-.04.32-.07.65-.07.98s.02.66.07.98l-2.11 1.65 2 3.46 2.49-1c.52.41 1.09.74 1.69.98L11 21h4l.36-2.93c.6-.24 1.17-.57 1.69-.98l2.49 1 2-3.46-2.11-1.65ZM13 16a4 4 0 1 1-2-7.46A4 4 0 0 1 13 16Z"/>
+        </symbol>
+
+        <symbol id="icon-bell" viewBox="0 0 24 24">
+            <path d="M12 22a2.6 2.6 0 0 0 2.55-2.1h-5.1A2.6 2.6 0 0 0 12 22Zm7-5-1.8-2.3V10a5.2 5.2 0 0 0-4-5.05V3a1.2 1.2 0 0 0-2.4 0v1.95a5.2 5.2 0 0 0-4 5.05v4.7L5 17v1h14v-1Z"/>
+        </symbol>
+
+        <symbol id="icon-file" viewBox="0 0 24 24">
+            <path d="M5 3h10l4 4v14H5V3Zm9 1.5V8h3.5L14 4.5ZM8 11h8v2H8v-2Zm0 4h8v2H8v-2Z"/>
+        </symbol>
+
+        <symbol id="icon-warning" viewBox="0 0 24 24">
+            <path d="M1 21h22L12 2 1 21Zm12-3h-2v-2h2v2Zm0-4h-2v-4h2v4Z"/>
+        </symbol>
+
+        <symbol id="icon-clock" viewBox="0 0 24 24">
+            <path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.4 3.7 2.2-1 1.7L11 13.5V6h2v6.4Z"/>
+        </symbol>
+
+        <symbol id="icon-check" viewBox="0 0 24 24">
+            <path d="M9.2 16.6 4.9 12.3l-1.4 1.4 5.7 5.7L21 7.6l-1.4-1.4L9.2 16.6Z"/>
+        </symbol>
+
+        <symbol id="icon-location" viewBox="0 0 24 24">
+            <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/>
+        </symbol>
+
+        <symbol id="icon-arrow" viewBox="0 0 24 24">
+            <path d="M13 5 20 12l-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z"/>
+        </symbol>
+    </svg>
+
+    {% set pagina_activa = 'dashboard' %}
+    {% include 'componentes/menu_admin.html' %}
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <button type="button" class="menu-button" aria-label="Abrir menú">
+                <svg><use href="#icon-menu"></use></svg>
+            </button>
+
+            <label class="admin-search">
+                <svg><use href="#icon-search"></use></svg>
+
+                <input
+                    type="search"
+                    id="adminSearch"
+                    placeholder="Buscar reportes, usuarios, supervisores..."
+                    autocomplete="off"
+                >
+            </label>
+
+            <div class="topbar-actions">
+                <button type="button" class="notification-button">
+                    <svg><use href="#icon-bell"></use></svg>
+
+                    {% if notificaciones %}
+                        <span>{{ notificaciones|length }}</span>
+                    {% endif %}
+                </button>
+
+                <a href="{{ url_for('login.cerrar_sesion') }}" class="logout-button">
+                    Salir
+                </a>
+
+                <div class="top-profile">
+                    <div class="top-avatar">
+                        {{ usuario.nombre[0] }}{{ usuario.apellido[0] }}
+                    </div>
+
+                    <div>
+                        <strong>{{ usuario.nombre }}</strong>
+                        <span>Administrador</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="admin-hero">
+            <div>
+                <span>Sistema de Reportes de Incidencias · UNAJ Sede La Capilla</span>
+
+                <h1>
+                    Bienvenido,
+                    <br>
+                    Administrador.
+                </h1>
+
+                <p>
+                    Controla reportes críticos, usuarios, supervisores y seguimiento
+                    de incidencias desde un panel centralizado.
+                </p>
+            </div>
+        </section>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                <section class="flash-zone">
+                    {% for categoria, mensaje in mensajes %}
+                        <article class="flash-card {{ categoria }}">
+                            <span>
+                                {% if categoria == 'success' %}
+                                    ✓
+                                {% elif categoria == 'danger' %}
+                                    !
+                                {% elif categoria == 'warning' %}
+                                    ⚠
+                                {% else %}
+                                    i
+                                {% endif %}
+                            </span>
+
+                            <p>{{ mensaje }}</p>
+                        </article>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="kpi-grid">
+            <article class="kpi-card purple">
+                <div class="kpi-icon">
+                    <svg><use href="#icon-file"></use></svg>
+                </div>
+
+                <div class="kpi-content">
+                    <span>Reportes totales</span>
+                    <strong>{{ kpis.total_reportes }}</strong>
+
+                    <p>
+                        {% if kpis.variacion_total >= 0 %}
+                            +{{ kpis.variacion_total }}%
+                        {% else %}
+                            {{ kpis.variacion_total }}%
+                        {% endif %}
+                        respecto al mes anterior
+                    </p>
+                </div>
+
+                <div class="sparkline spark-purple">
+                    <i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+            </article>
+
+            <article class="kpi-card red">
+                <div class="kpi-icon">
+                    <svg><use href="#icon-warning"></use></svg>
+                </div>
+
+                <div class="kpi-content">
+                    <span>Críticos</span>
+                    <strong>{{ kpis.reportes_criticos }}</strong>
+
+                    <p>
+                        {% if kpis.variacion_criticos >= 0 %}
+                            +{{ kpis.variacion_criticos }}%
+                        {% else %}
+                            {{ kpis.variacion_criticos }}%
+                        {% endif %}
+                        respecto al mes anterior
+                    </p>
+                </div>
+
+                <div class="sparkline spark-red">
+                    <i></i><i></i><i></i><i></i><i></i>
+                </div>
+            </article>
+
+            <article class="kpi-card blue">
+                <div class="kpi-icon">
+                    <svg><use href="#icon-clock"></use></svg>
+                </div>
+
+                <div class="kpi-content">
+                    <span>En proceso</span>
+                    <strong>{{ kpis.reportes_en_proceso }}</strong>
+
+                    <p>
+                        {% if kpis.variacion_proceso >= 0 %}
+                            +{{ kpis.variacion_proceso }}%
+                        {% else %}
+                            {{ kpis.variacion_proceso }}%
+                        {% endif %}
+                        respecto al mes anterior
+                    </p>
+                </div>
+
+                <div class="sparkline spark-blue">
+                    <i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+            </article>
+
+            <article class="kpi-card green">
+                <div class="kpi-icon">
+                    <svg><use href="#icon-check"></use></svg>
+                </div>
+
+                <div class="kpi-content">
+                    <span>Resueltos</span>
+                    <strong>{{ kpis.reportes_resueltos }}</strong>
+
+                    <p>
+                        {% if kpis.variacion_resueltos >= 0 %}
+                            +{{ kpis.variacion_resueltos }}%
+                        {% else %}
+                            {{ kpis.variacion_resueltos }}%
+                        {% endif %}
+                        respecto al mes anterior
+                    </p>
+                </div>
+
+                <div class="sparkline spark-green">
+                    <i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+            </article>
+        </section>
+
+        <section class="admin-layout">
+            <article class="panel chart-panel">
+                <div class="panel-header">
+                    <div>
+                        <span>Estadísticas</span>
+                        <h2>Reportes por mes</h2>
+                    </div>
+
+                    <button type="button">Este año</button>
+                </div>
+
+                <div class="chart-area">
+                    <div class="chart-scale">
+                        <span>250</span>
+                        <span>200</span>
+                        <span>150</span>
+                        <span>100</span>
+                        <span>50</span>
+                        <span>0</span>
+                    </div>
+
+                    <div class="bar-chart" id="barChart">
+                        {% for item in reportes_por_mes %}
+                            <div class="bar-item">
+                                <div class="bar-track">
+                                    <div
+                                        class="bar-fill"
+                                        data-height="{{ item.altura }}"
+                                        data-total="{{ item.total }}"
+                                    >
+                                        <span>{{ item.total }} reportes</span>
+                                    </div>
+                                </div>
+
+                                <small>{{ item.mes }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel notifications-panel">
+                <div class="panel-header">
+                    <div>
+                        <span>Actividad</span>
+                        <h2>Notificaciones</h2>
+                    </div>
+
+                    <a href="#">Ver todas</a>
+                </div>
+
+                {% if notificaciones %}
+                    <div class="notification-list">
+                        {% for notificacion in notificaciones %}
+                            <article class="notification-item {{ notificacion.tipo }}">
+                                <div class="notification-icon">
+                                    {% if notificacion.tipo == 'danger' %}
+                                        <svg><use href="#icon-warning"></use></svg>
+                                    {% elif notificacion.tipo == 'success' %}
+                                        <svg><use href="#icon-check"></use></svg>
+                                    {% elif notificacion.tipo == 'user' %}
+                                        <svg><use href="#icon-users"></use></svg>
+                                    {% else %}
+                                        <svg><use href="#icon-bell"></use></svg>
+                                    {% endif %}
+                                </div>
+
+                                <div>
+                                    <p>{{ notificacion.mensaje }}</p>
+                                    <small>{{ notificacion.tiempo }}</small>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-box">
+                        <strong>No hay notificaciones recientes</strong>
+                        <p>Las nuevas alertas del sistema aparecerán aquí.</p>
+                    </div>
+                {% endif %}
+            </article>
+
+            <article class="panel incidents-panel">
+                <div class="panel-header">
+                    <div>
+                        <span>Gestión</span>
+                        <h2>Incidencias recientes</h2>
+                    </div>
+
+                    <a href="{{ url_for('reportes.panel_reportes') }}">
+                        Ver todos los reportes
+                        <svg><use href="#icon-arrow"></use></svg>
+                    </a>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Categoría</th>
+                                <th>Prioridad</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Asignado a</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% if incidencias_recientes %}
+                                {% for incidencia in incidencias_recientes %}
+                                    <tr>
+                                        <td>{{ incidencia.codigo }}</td>
+
+                                        <td>
+                                            <strong>{{ incidencia.titulo }}</strong>
+                                            <span>{{ incidencia.laboratorio }}</span>
+                                        </td>
+
+                                        <td>{{ incidencia.categoria_texto }}</td>
+
+                                        <td>
+                                            <span class="pill priority-{{ incidencia.prioridad }}">
+                                                {{ incidencia.prioridad_texto }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="pill status-{{ incidencia.estado }}">
+                                                {{ incidencia.estado_texto }}
+                                            </span>
+                                        </td>
+
+                                        <td>{{ incidencia.fecha_reporte }}</td>
+
+                                        <td>{{ incidencia.asignado_a }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="table-empty">
+                                        Todavía no hay incidencias registradas.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <aside class="right-column">
+                <article class="panel recent-users-panel">
+                    <div class="panel-header">
+                        <div>
+                            <span>Usuarios</span>
+                            <h2>Usuarios recientes</h2>
+                        </div>
+
+                        <a href="{{ url_for('admin.usuarios') }}">Ver todos</a>
+                    </div>
+
+                    {% if usuarios_recientes %}
+                        <div class="recent-users-list">
+                            {% for user in usuarios_recientes %}
+                                <article class="recent-user">
+                                    <div class="mini-avatar">
+                                        {{ user.nombre[0] }}{{ user.apellido[0] }}
+                                    </div>
+
+                                    <div>
+                                        <strong>{{ user.nombre }} {{ user.apellido }}</strong>
+                                        <span>{{ user.correo }}</span>
+                                    </div>
+
+                                    <small>{{ user.rol_texto }}</small>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-box">
+                            <strong>No hay usuarios recientes</strong>
+                            <p>Los nuevos registros aparecerán aquí.</p>
+                        </div>
+                    {% endif %}
+                </article>
+
+                <article class="panel user-summary-panel">
+                    <div class="panel-header">
+                        <div>
+                            <span>Resumen</span>
+                            <h2>Usuarios del sistema</h2>
+                        </div>
+                    </div>
+
+                    <div class="user-summary-grid">
+                        <article>
+                            <span>Total</span>
+                            <strong>{{ resumen_usuarios.total_usuarios }}</strong>
+                        </article>
+
+                        <article>
+                            <span>Estudiantes</span>
+                            <strong>{{ resumen_usuarios.total_estudiantes }}</strong>
+                        </article>
+
+                        <article>
+                            <span>Supervisores</span>
+                            <strong>{{ resumen_usuarios.total_supervisores }}</strong>
+                        </article>
+
+                        <article>
+                            <span>Admins</span>
+                            <strong>{{ resumen_usuarios.total_administradores }}</strong>
+                        </article>
+                    </div>
+                </article>
+
+                <article class="panel location-panel">
+                    <div class="panel-header">
+                        <div>
+                            <span>Ubicación</span>
+                            <h2>Sede La Capilla</h2>
+                        </div>
+                    </div>
+
+                    <div class="map-card">
+                        <div class="map-grid"></div>
+
+                        <div class="map-pin">
+                            <svg><use href="#icon-location"></use></svg>
+                        </div>
+
+                        <div class="map-info">
+                            <strong>Sede La Capilla</strong>
+                            <span>Universidad Nacional de Juliaca</span>
+                            <small>Av. Nueva Zelandia N.° 631</small>
+                        </div>
+                    </div>
+                </article>
+            </aside>
+        </section>
+
+        <footer class="admin-footer">
+            <span>© {{ fecha_actual.strftime('%Y') }} Universidad Nacional de Juliaca</span>
+            <span>Sistema de Reportes de Incidencias</span>
+        </footer>
+    </main>
+
+    <script>
+        document.querySelectorAll(".bar-fill[data-height]").forEach((bar) => {
+            const height = Number(bar.dataset.height || 0);
+            const safeHeight = Math.max(4, Math.min(100, height));
+
+            setTimeout(() => {
+                bar.style.height = `${safeHeight}%`;
+            }, 280);
+        });
+
+        document.addEventListener("mousemove", (event) => {
+            const x = event.clientX / window.innerWidth;
+            const y = event.clientY / window.innerHeight;
+
+            document.documentElement.style.setProperty("--mx", `${x * 100}%`);
+            document.documentElement.style.setProperty("--my", `${y * 100}%`);
+        });
+
+        const adminSearch = document.getElementById("adminSearch");
+
+        if (adminSearch) {
+            adminSearch.addEventListener("input", () => {
+                const value = adminSearch.value
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .trim();
+
+                const rows = document.querySelectorAll(".incidents-panel tbody tr");
+
+                rows.forEach((row) => {
+                    const text = row.textContent
+                        .toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "");
+
+                    row.style.display = text.includes(value) ? "" : "none";
+                });
+            });
+        }
+
+        document.querySelectorAll(".flash-card").forEach((card) => {
+            setTimeout(() => {
+                card.classList.add("hide-flash");
+
+                setTimeout(() => {
+                    card.remove();
+                }, 450);
+            }, 4300);
+        });
+    </script>
+</body>
+</html>
